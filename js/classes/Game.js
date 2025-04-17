@@ -61,12 +61,20 @@ class Game {
   drawMeusSois = () => {
     this.ctx.fillStyle = "#ff0a"
     this.ctx.font = "60px Arial"
-    this.ctx.fillText(this.meusSois, this.cnv.width - 12 * 5, 12 * 5)
+    this.ctx.fillText(this.meusSois, this.cnv.width - 60, 60)
+  }
+
+  pegarSol = (sol) => {
+    if (detectarMouseColisao(this.mousePos, sol)) {
+      this.meusSois += sol.valor
+      this.sois.splice(this.sois.indexOf(sol), 1)
+    }
   }
 
   update = () => {
     this.sois.forEach((sol, index) => {
       sol.fall()
+      this.pegarSol(sol)
 
       if (sol.y > this.cnv.height) {
         this.sois.splice(index, 1)

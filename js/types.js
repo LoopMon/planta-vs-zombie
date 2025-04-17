@@ -14,6 +14,7 @@
  * @property {number} height - altura do sol
  * @property {string} cor - cor
  * @property {number} velocidade - velocidade da queda
+ * @property {number} valor - valor do sol
  */
 
 /** Zombie

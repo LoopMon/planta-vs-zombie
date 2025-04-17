@@ -82,7 +82,7 @@ function createGrid(painel, dim) {
 }
 
 /**
- *  Cria os itens do painel
+ * Cria os itens do painel
  *
  * @param {Painel} painel - Painel do jogo
  * @param {Object[]} elementos - Elementos para o painel
@@ -103,4 +103,21 @@ function createPainelItens(painel, elementos) {
   }
 
   return items
+}
+
+/**
+ * Permite identificar se o mouse passou
+ * por cima de um objeto.
+ *
+ * @param {number[]} mouse - posições do mouse no plano
+ * @param {Object} obj - objeto do plano
+ * @returns {boolean}
+ */
+function detectarMouseColisao(mouse, obj) {
+  return (
+    mouse[0] >= obj.x &&
+    mouse[0] <= obj.x + obj.width &&
+    mouse[1] >= obj.y &&
+    mouse[1] <= obj.y + obj.height
+  )
 }

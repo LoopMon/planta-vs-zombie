@@ -15,8 +15,8 @@ class Painel {
     ctx.fillRect(this.x, this.y, this.width, this.height)
 
     // PLAYER SUNS
-    // ctx.fillStyle = "brown"
-    // ctx.fillRect(this.x + 5, this.y + 5, 100, this.height - 10)
+    ctx.fillStyle = "brown"
+    ctx.fillRect(this.width - 110, this.y + 5, 100, this.height - 10)
 
     this.drawItens(ctx)
   }
@@ -26,7 +26,7 @@ class Painel {
       let tamanhoFonte = 12
       ctx.fillStyle = "#000"
       ctx.lineWidth = 1
-      ctx.font = `${tamanhoFonte} Arial`
+      ctx.font = `${tamanhoFonte}px Arial`
       ctx.fillText(item.nome, item.x + tamanhoFonte, item.y + tamanhoFonte * 2)
       ctx.fillText(item.custo, item.x + tamanhoFonte, item.y + tamanhoFonte * 3)
       ctx.strokeStyle = "#000"
