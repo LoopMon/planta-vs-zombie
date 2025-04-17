@@ -68,7 +68,7 @@
  * @property {number[2]} mousePos - posição do mouse X e Y
  * @property {Object} gameEstados - estados do jogo
  * @property {number} gameEstadoAtual - estado atual do jogo
- * @property {Planta} plantaAtual - planta atual
+ * @property {Item} plantaAtual - planta atual
  * @property {Painel} painel - painel do jogo
  * @property {Grid[][]} grid - coleção de grids
  * @property {Planta[]} plantas - coleção de plantas
