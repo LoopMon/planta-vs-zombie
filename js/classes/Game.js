@@ -12,27 +12,34 @@ class Game {
     this.mouseEstados = {
       livre: 0,
       plantar: 1,
+      removerPlanta: 2,
     }
     this.mousePos = [0, 0]
     this.gameEstados = {
       jogar: 0,
       pause: 1,
+      menu: 2,
     }
     this.mouseEstadoAtual = this.mouseEstados.livre
     this.gameEstadoAtual = this.gameEstados.jogar
-    this.plantaAtual = null
+    this.plantaAtual = {}
     this.painel = null
     this.grid = null
-    this.plantas = []
+    this.plants = []
     this.zombies = []
     this.sois = []
-    this.meusSois = 0
+    this.mySuns = 400
     this.timerSol = 0
 
     this.cnv.width = window.innerWidth
     this.cnv.height = window.innerHeight
   }
 
+  /**
+   * Responsável por desenhar os elementos do jogo.
+   *
+   * @returns {void}
+   */
   draw = () => {
     this.painel.draw(this.ctx)
 
@@ -41,6 +48,10 @@ class Game {
         this.ctx.fillStyle = "#228b22"
         this.ctx.fillRect(campo.x, campo.y, campo.width, campo.height)
       })
+    })
+
+    this.plants.forEach((plant) => {
+      plant.draw(this.ctx)
     })
 
     this.sois.forEach((sol) => {
@@ -52,25 +63,12 @@ class Game {
     this.drawMeusSois()
   }
 
-  drawMouseInfo = () => {
-    this.ctx.fillStyle = "#0f0"
-    this.ctx.font = "16px Arial"
-    this.ctx.fillText(this.mouseEstadoAtual, this.mousePos[0], this.mousePos[1])
-  }
-
-  drawMeusSois = () => {
-    this.ctx.fillStyle = "#ff0a"
-    this.ctx.font = "60px Arial"
-    this.ctx.fillText(this.meusSois, this.cnv.width - 60, 60)
-  }
-
-  pegarSol = (sol) => {
-    if (detectarMouseColisao(this.mousePos, sol)) {
-      this.meusSois += sol.valor
-      this.sois.splice(this.sois.indexOf(sol), 1)
-    }
-  }
-
+  /**
+   * Responsável por verificar a atualização
+   * dos elementos do jogo.
+   *
+   * @returns {void}
+   */
   update = () => {
     this.sois.forEach((sol, index) => {
       sol.fall()
@@ -83,6 +81,31 @@ class Game {
     this.spawns()
   }
 
+  drawMouseInfo = () => {
+    this.ctx.fillStyle = "#0f0"
+    this.ctx.font = "16px Arial"
+    this.ctx.fillText(this.mouseEstadoAtual, this.mousePos[0], this.mousePos[1])
+  }
+
+  drawMeusSois = () => {
+    this.ctx.fillStyle = "#ff0a"
+    this.ctx.font = "60px Arial"
+    this.ctx.fillText(this.mySuns, this.cnv.width - 60, 60)
+  }
+
+  pegarSol = (sol) => {
+    if (detectMouseCollision(this.mousePos, sol)) {
+      this.mySuns += sol.valor
+      this.sois.splice(this.sois.indexOf(sol), 1)
+    }
+  }
+
+  /**
+   * Chama os métodos para criar os objetos
+   * que nascem por tempo.
+   *
+   * @returns {void}
+   */
   spawns = () => {
     this.timerSol += 1
     if (this.timerSol > 1000) {
@@ -91,6 +114,11 @@ class Game {
     }
   }
 
+  /**
+   * Adiciona um sol a coleção de sois.
+   *
+   * @returns {void}
+   */
   spawnSun = () => {
     this.sois.push(
       createSun(
@@ -102,6 +130,27 @@ class Game {
     )
   }
 
+  /**
+   * Posiciona a planta em uma posição informada
+   *
+   * @param {number} x - x de um campo do grid
+   * @param {number} y - y de um campo do grid
+   * @returns {void}
+   */
+  plantar = (x, y) => {
+    if (this.plantaAtual && this.mySuns >= this.plantaAtual.custo) {
+      this.plants.push(createPlant(x, y, 40, 60, this.plantaAtual.nome))
+      this.mySuns -= this.plantaAtual.custo
+      this.plantaAtual = {}
+      this.mouseEstadoAtual = this.mouseEstados.livre
+    }
+  }
+
+  /**
+   * Limpa a tela do canvas
+   *
+   * @returns {void}
+   */
   clearCanvas = () => {
     this.ctx.fillStyle = "#964b00"
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height)
@@ -114,9 +163,12 @@ class Game {
           event.clientX > item.x &&
           event.clientX < item.x + item.width &&
           event.clientY > item.y &&
-          event.clientY < item.y + item.height
+          event.clientY < item.y + item.height &&
+          this.mouseEstadoAtual == this.mouseEstados.livre &&
+          this.mySuns >= item.custo
         ) {
           this.mouseEstadoAtual = this.mouseEstados.plantar
+          this.plantaAtual = item
         }
       })
 
@@ -128,7 +180,7 @@ class Game {
             event.clientY > campo.y &&
             event.clientY < campo.y + campo.height
           ) {
-            this.mouseEstadoAtual = this.mouseEstados.livre
+            this.plantar(campo.x, campo.y)
           }
         })
       })
@@ -140,6 +192,12 @@ class Game {
     })
   }
 
+  /**
+   * Loop do jogo, vai chamar a função
+   * para desenhar e a de atualizar
+   *
+   * @returns {void}
+   */
   run = () => {
     this.clearCanvas()
     this.draw()
@@ -147,6 +205,12 @@ class Game {
     window.requestAnimationFrame(this.run)
   }
 
+  /**
+   * Inicializa o jogo criando os
+   * itens principais para jogar.
+   *
+   * @returns {void}
+   */
   init = () => {
     this.painel = createPainel(
       0,
