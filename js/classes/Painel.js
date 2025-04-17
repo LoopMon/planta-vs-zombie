@@ -38,16 +38,16 @@ class Painel {
   init = () => {
     const elementos = [
       {
-        nome: "tiro simples",
+        nome: "simples",
         custo: 100,
       },
       {
-        nome: "tiro duplo",
+        nome: "duplo",
         custo: 200,
       },
       {
         nome: "pedra",
-        custo: "50",
+        custo: 50,
       },
     ]
     this.items = createPainelItens(this, elementos)
