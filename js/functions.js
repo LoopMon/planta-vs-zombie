@@ -1,3 +1,5 @@
+/// <reference path="./types.js" />
+
 /**
  * Cria um painel para o jogo
  *
@@ -113,7 +115,7 @@ function createPainelItens(painel, elementos) {
  * @param {Object} obj - objeto do plano
  * @returns {boolean}
  */
-function detectarMouseColisao(mouse, obj) {
+function detectMouseCollision(mouse, obj) {
   return (
     mouse[0] >= obj.x &&
     mouse[0] <= obj.x + obj.width &&
