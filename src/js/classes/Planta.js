@@ -11,10 +11,15 @@ class Planta {
       y: this.y + Math.floor(this.height / 2),
       scale: 10,
     }
+    this.tipos = {
+      pedra: "brown",
+      simples: "green",
+      duplo: "purple",
+    }
   }
 
   draw = (ctx) => {
-    ctx.fillStyle = "green"
+    ctx.fillStyle = this.tipos[this.tipo]
     ctx.fillRect(this.x, this.y, this.width, this.height)
   }
 

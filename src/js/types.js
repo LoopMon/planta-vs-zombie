@@ -1,9 +1,18 @@
+/** Retângulo
+ * @typedef {Object} Retangulo
+ * @property {number} x - Posição X do Retangulo.
+ * @property {number} y - Posição Y do Retangulo.
+ * @property {number} width - Largura.
+ * @property {number} height - Altura.
+ */
+
 /** Grid
  * @typedef {Object} Grid
  * @property {number} x - Posição X do item no grid.
  * @property {number} y - Posição Y do item no grid.
  * @property {number} width - Largura do item.
  * @property {number} height - Altura do item.
+ * @property {string} value - item no grid.
  */
 
 /** Sol
@@ -65,15 +74,15 @@
  * @property {CanvasRenderingContext2D} ctx - contexto do canvas
  * @property {Object} mouseEstados - estados do mouse
  * @property {number} mouseEstadoAtual - estado atual do mouse
- * @property {number[2]} mousePos - posição do mouse X e Y
+ * @property {number[]} mousePos - posição do mouse X e Y
  * @property {Object} gameEstados - estados do jogo
  * @property {number} gameEstadoAtual - estado atual do jogo
- * @property {Planta} plantaAtual - planta atual
+ * @property {Item} plantaAtual - planta atual
  * @property {Painel} painel - painel do jogo
  * @property {Grid[][]} grid - coleção de grids
  * @property {Planta[]} plantas - coleção de plantas
  * @property {Zombie[]} zombies - coleção de zombies
- * @property {Sol[]} sois - coleção de sols
- * @property {number} meusSois - quantidade de sols
- * @property {number} timerSol - temporizador para o sol
+ * @property {Sol[]} sois - coleção de sois
+ * @property {number} meusSois - quantidade de sois coletados
+ * @property {number} timerSol - temporizador para o sol nascer
  */

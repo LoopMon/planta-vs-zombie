@@ -1,3 +1,5 @@
+/// <reference path="./types.js" />
+
 /**
  * Cria um painel para o jogo
  *
@@ -61,21 +63,41 @@ function createZombie(x, y, width, height, tipo) {
  * Cria o grid onde vamos plantar as plantas
  *
  * @param {Painel} painel - Painel do jogo
- * @param {number} dim - dimensões para o grid
- * @returns {Grid[]} grid posicionado abaixo do painel
+ * @param {number} dim - dimensões para o grid (Linha x Coluna)
+ * @returns {Grid[][]} grid posicionado abaixo do painel
  */
-function createGrid(painel, dim) {
+function createGrid(cnv, painel, dim = [5, 10]) {
   const grid = []
-  const deslocamento = 65
+  const gridWidth = 80
+  const gridHeight = 90
+  let painelArea = painel.y + painel.height
+  let areaForGrids = cnv.height - painelArea
+  let gap = 5
+
+  if (dim[0] > 5) {
+    dim[0] = 5
+  }
+
   for (let i = 0; i < dim[0]; i++) {
     grid.push([])
     for (let j = 0; j < dim[1]; j++) {
-      grid[i].push({
-        x: 5 + deslocamento * j,
-        y: (painel.y + painel.height + 5) * (i + 1),
-        width: deslocamento - 5,
-        height: 80,
-      })
+      if (i == 0) {
+        grid[i].push({
+          x: gridWidth * j + gap,
+          y: painelArea * (i + 1) + gap,
+          width: gridWidth - gap,
+          height: Math.min(gridHeight, Math.floor(areaForGrids / dim[0]) - gap),
+          value: "",
+        })
+      } else {
+        grid[i].push({
+          x: gridWidth * j + gap,
+          y: grid[i - 1][j].y + grid[i - 1][j].height + gap,
+          width: gridWidth - gap,
+          height: Math.min(gridHeight, Math.floor(areaForGrids / dim[0]) - gap),
+          value: "",
+        })
+      }
     }
   }
   return grid
@@ -90,16 +112,31 @@ function createGrid(painel, dim) {
  */
 function createPainelItens(painel, elementos) {
   const items = []
-  const deslocamento = 90
-  for (let i = 0; i < elementos.length; i++) {
-    items.push({
-      x: 5 + deslocamento * i,
-      y: 5,
-      width: 80,
-      height: painel.height - 20,
-      custo: elementos[i].custo,
-      nome: elementos[i].nome,
-    })
+
+  let gap = 10
+  let posX = painel.areaPlayerSuns.x + painel.areaPlayerSuns.width + gap
+  let posY = 10
+
+  for (let i = 1; i <= elementos.length; i++) {
+    if (i == 1) {
+      items.push({
+        x: posX,
+        y: posY,
+        width: 80,
+        height: painel.height - posY * 2,
+        custo: elementos[i - 1].custo,
+        nome: elementos[i - 1].nome,
+      })
+    } else {
+      items.push({
+        x: items[i - 2].x + items[i - 2].width + gap,
+        y: posY,
+        width: 80,
+        height: painel.height - posY * 2,
+        custo: elementos[i - 1].custo,
+        nome: elementos[i - 1].nome,
+      })
+    }
   }
 
   return items
@@ -113,11 +150,54 @@ function createPainelItens(painel, elementos) {
  * @param {Object} obj - objeto do plano
  * @returns {boolean}
  */
-function detectarMouseColisao(mouse, obj) {
+function detectMouseCollision(mouse, obj) {
   return (
     mouse[0] >= obj.x &&
     mouse[0] <= obj.x + obj.width &&
     mouse[1] >= obj.y &&
     mouse[1] <= obj.y + obj.height
   )
+}
+
+/**
+ * Função responsável por transformar números grandes
+ * em strings dos números abreviados.
+ *
+ * Por exemplo:
+ *
+ * - 1000 -> 1k
+ *
+ * - 10000 -> 10k
+ *
+ * - 4000000 -> 4M
+ *
+ * @param {number} n - Número completo
+ * @returns {string}
+ */
+function formatarNumero(n) {
+  const casas = {
+    k: [3, 4, 5],
+    M: [6, 7, 8],
+    B: [9, 10, 11],
+    T: [12, 13, 14],
+  }
+
+  if (n >= 1000) {
+    n = "" + n
+
+    let cd = n.slice(1, n.length).length
+
+    for (let key in casas) {
+      if (casas[key].includes(cd)) {
+        aux = +("1e" + casas[key][0])
+        n = +n
+        n = (n / aux).toFixed(2)
+        n = n + key
+        break
+      }
+    }
+    return n
+  }
+
+  return n
 }
