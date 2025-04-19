@@ -30,6 +30,8 @@ cd planta-vs-zombie
 
 3. Abra o arquivo `index.html` no navegador.
 
----
+## Amostra do jogo (por enquanto)
+
+<img align="center" width="455" height="203" src="./readme_images/layout.png">
 
 Divirta-se jogando e aprendendo!
