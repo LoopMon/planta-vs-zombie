@@ -5,32 +5,63 @@ class Painel {
     this.width = width
     this.height = height
     this.corFundo = corFundo
-    this.corBorda = "blue"
     this.items = []
+    this.areaPlayerSuns = {
+      x: this.x + 5,
+      y: this.y + 5,
+      width: 100,
+      height: this.height - 10,
+      color: "brown",
+    }
   }
 
-  draw = (ctx) => {
+  draw = (ctx, playerSuns) => {
     // PAINEL
     ctx.fillStyle = this.corFundo
     ctx.fillRect(this.x, this.y, this.width, this.height)
 
-    // PLAYER SUNS
-    ctx.fillStyle = "brown"
-    ctx.fillRect(this.width - 110, this.y + 5, 100, this.height - 10)
-
+    this.drawPlayerSuns(ctx, playerSuns)
     this.drawItens(ctx)
+  }
+
+  drawPlayerSuns = (ctx, playerSuns) => {
+    // AREA PLAYER SUNS
+    ctx.fillStyle = this.areaPlayerSuns.color
+    ctx.fillRect(
+      this.areaPlayerSuns.x,
+      this.areaPlayerSuns.y,
+      this.areaPlayerSuns.width,
+      this.areaPlayerSuns.height
+    )
+    // PLAYER SUNS
+    let tamanhoFonte = 24
+    ctx.fillStyle = "#ff0"
+    ctx.font = `${tamanhoFonte}px Arial`
+    ctx.fillText(
+      formatarNumero(playerSuns),
+      this.areaPlayerSuns.x,
+      this.areaPlayerSuns.y + tamanhoFonte,
+      this.areaPlayerSuns.width
+    )
   }
 
   drawItens = (ctx) => {
     this.items.forEach((item) => {
       let tamanhoFonte = 12
+      // ITEM TEXT
       ctx.fillStyle = "#000"
       ctx.lineWidth = 1
       ctx.font = `${tamanhoFonte}px Arial`
       ctx.fillText(item.nome, item.x + tamanhoFonte, item.y + tamanhoFonte * 2)
-      ctx.fillText(item.custo, item.x + tamanhoFonte, item.y + tamanhoFonte * 3)
+      ctx.fillText(
+        item.custo,
+        item.x + tamanhoFonte,
+        item.y + tamanhoFonte * 3.5
+      )
+
+      // BOX
       ctx.strokeStyle = "#000"
-      ctx.lineWidth = 3
+      ctx.lineWidth = 2
       ctx.strokeRect(item.x, item.y, item.width, item.height)
     })
   }
