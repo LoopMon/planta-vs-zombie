@@ -28,7 +28,7 @@ class Game {
     this.plants = []
     this.zombies = []
     this.sois = []
-    this.mySuns = 400
+    this.mySuns = 1_000_000 // para desenvolvimento
     this.timerSol = 0
 
     this.cnv.width = window.innerWidth
@@ -41,7 +41,7 @@ class Game {
    * @returns {void}
    */
   draw = () => {
-    this.painel.draw(this.ctx)
+    this.painel.draw(this.ctx, this.mySuns)
 
     this.grid.forEach((fileira) => {
       fileira.forEach((campo) => {
@@ -59,8 +59,6 @@ class Game {
     })
 
     this.drawMouseInfo()
-
-    this.drawMeusSois()
   }
 
   /**
@@ -85,12 +83,6 @@ class Game {
     this.ctx.fillStyle = "#0f0"
     this.ctx.font = "16px Arial"
     this.ctx.fillText(this.mouseEstadoAtual, this.mousePos[0], this.mousePos[1])
-  }
-
-  drawMeusSois = () => {
-    this.ctx.fillStyle = "#ff0a"
-    this.ctx.font = "60px Arial"
-    this.ctx.fillText(this.mySuns, this.cnv.width - 60, 60)
   }
 
   pegarSol = (sol) => {
@@ -194,7 +186,7 @@ class Game {
 
   /**
    * Loop do jogo, vai chamar a função
-   * para desenhar e a de atualizar
+   * para desenhar e atualizar
    *
    * @returns {void}
    */
@@ -206,7 +198,7 @@ class Game {
   }
 
   /**
-   * Inicializa o jogo criando os
+   * Inicia o jogo criando os
    * itens principais para jogar.
    *
    * @returns {void}
@@ -220,7 +212,7 @@ class Game {
       "#bb5"
     )
     this.painel.init()
-    this.grid = createGrid(this.painel, [4, 10])
+    this.grid = createGrid(this.cnv, this.painel, [1, 10])
     this.addEvents()
     console.log("Starting Game!!!")
     this.run()
