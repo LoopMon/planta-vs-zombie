@@ -87,6 +87,7 @@ function createGrid(cnv, painel, dim = [5, 10]) {
           y: painelArea * (i + 1) + gap,
           width: gridWidth - gap,
           height: Math.min(gridHeight, Math.floor(areaForGrids / dim[0]) - gap),
+          value: "",
         })
       } else {
         grid[i].push({
@@ -94,6 +95,7 @@ function createGrid(cnv, painel, dim = [5, 10]) {
           y: grid[i - 1][j].y + grid[i - 1][j].height + gap,
           width: gridWidth - gap,
           height: Math.min(gridHeight, Math.floor(areaForGrids / dim[0]) - gap),
+          value: "",
         })
       }
     }

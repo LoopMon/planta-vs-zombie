@@ -12,6 +12,7 @@
  * @property {number} y - Posição Y do item no grid.
  * @property {number} width - Largura do item.
  * @property {number} height - Altura do item.
+ * @property {string} value - item no grid.
  */
 
 /** Sol

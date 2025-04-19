@@ -9,25 +9,25 @@ class Game {
   constructor(cnv, ctx) {
     this.cnv = cnv
     this.ctx = ctx
-    this.mouseEstados = {
-      livre: 0,
-      plantar: 1,
-      removerPlanta: 2,
+    this.mouseFlags = {
+      free: 0,
+      plant: 1,
+      remove: 2,
     }
-    this.mousePos = [0, 0]
-    this.gameEstados = {
-      jogar: 0,
+    this.gameFlags = {
+      play: 0,
       pause: 1,
       menu: 2,
     }
-    this.mouseEstadoAtual = this.mouseEstados.livre
-    this.gameEstadoAtual = this.gameEstados.jogar
-    this.plantaAtual = {}
+    this.mouseState = this.mouseFlags.free
+    this.gameState = this.gameFlags.play
+    this.mousePos = [0, 0]
+    this.currentPlant = {}
     this.painel = null
     this.grid = null
     this.plants = []
     this.zombies = []
-    this.sois = []
+    this.suns = []
     this.mySuns = 1_000_000 // para desenvolvimento
     this.timerSol = 0
 
@@ -43,10 +43,10 @@ class Game {
   draw = () => {
     this.painel.draw(this.ctx, this.mySuns)
 
-    this.grid.forEach((fileira) => {
-      fileira.forEach((campo) => {
+    this.grid.forEach((line) => {
+      line.forEach((field) => {
         this.ctx.fillStyle = "#228b22"
-        this.ctx.fillRect(campo.x, campo.y, campo.width, campo.height)
+        this.ctx.fillRect(field.x, field.y, field.width, field.height)
       })
     })
 
@@ -54,8 +54,8 @@ class Game {
       plant.draw(this.ctx)
     })
 
-    this.sois.forEach((sol) => {
-      sol.draw(this.ctx)
+    this.suns.forEach((sun) => {
+      sun.draw(this.ctx)
     })
 
     this.drawMouseInfo()
@@ -68,12 +68,12 @@ class Game {
    * @returns {void}
    */
   update = () => {
-    this.sois.forEach((sol, index) => {
-      sol.fall()
-      this.pegarSol(sol)
+    this.suns.forEach((sun, index) => {
+      sun.fall()
+      this.collectSun(sun)
 
-      if (sol.y > this.cnv.height) {
-        this.sois.splice(index, 1)
+      if (sun.y > this.cnv.height) {
+        this.suns.splice(index, 1)
       }
     })
     this.spawns()
@@ -82,13 +82,13 @@ class Game {
   drawMouseInfo = () => {
     this.ctx.fillStyle = "#0f0"
     this.ctx.font = "16px Arial"
-    this.ctx.fillText(this.mouseEstadoAtual, this.mousePos[0], this.mousePos[1])
+    this.ctx.fillText(this.mouseState, this.mousePos[0], this.mousePos[1])
   }
 
-  pegarSol = (sol) => {
-    if (detectMouseCollision(this.mousePos, sol)) {
-      this.mySuns += sol.valor
-      this.sois.splice(this.sois.indexOf(sol), 1)
+  collectSun = (sun) => {
+    if (detectMouseCollision(this.mousePos, sun)) {
+      this.mySuns += sun.valor
+      this.suns.splice(this.suns.indexOf(sun), 1)
     }
   }
 
@@ -112,7 +112,7 @@ class Game {
    * @returns {void}
    */
   spawnSun = () => {
-    this.sois.push(
+    this.suns.push(
       createSun(
         Math.floor(Math.random() * this.cnv.width - 40) + 40,
         Math.floor(Math.random() * -30),
@@ -123,18 +123,25 @@ class Game {
   }
 
   /**
-   * Posiciona a planta em uma posição informada
+   * Posiciona a planta em uma posição informada, se
+   * ja estiver ocupado não planta.
    *
    * @param {number} x - x de um campo do grid
    * @param {number} y - y de um campo do grid
+   * @param {Grid} grid - grid para plantar
    * @returns {void}
    */
-  plantar = (x, y) => {
-    if (this.plantaAtual && this.mySuns >= this.plantaAtual.custo) {
-      this.plants.push(createPlant(x, y, 40, 60, this.plantaAtual.nome))
-      this.mySuns -= this.plantaAtual.custo
-      this.plantaAtual = {}
-      this.mouseEstadoAtual = this.mouseEstados.livre
+  plant = (x, y, grid) => {
+    if (!!grid.value) return
+
+    if (this.currentPlant && this.mySuns >= this.currentPlant.custo) {
+      this.plants.push(createPlant(x, y, 40, 60, this.currentPlant.nome))
+      grid.value = this.currentPlant.nome
+      console.log(grid)
+
+      this.mySuns -= this.currentPlant.custo
+      this.currentPlant = {}
+      this.mouseState = this.mouseFlags.free
     }
   }
 
@@ -156,23 +163,23 @@ class Game {
           event.clientX < item.x + item.width &&
           event.clientY > item.y &&
           event.clientY < item.y + item.height &&
-          this.mouseEstadoAtual == this.mouseEstados.livre &&
+          this.mouseState == this.mouseFlags.free &&
           this.mySuns >= item.custo
         ) {
-          this.mouseEstadoAtual = this.mouseEstados.plantar
-          this.plantaAtual = item
+          this.mouseState = this.mouseFlags.plant
+          this.currentPlant = item
         }
       })
 
-      this.grid.forEach((fileira) => {
-        fileira.forEach((campo) => {
+      this.grid.forEach((line, i) => {
+        line.forEach((field, j) => {
           if (
-            event.clientX > campo.x &&
-            event.clientX < campo.x + campo.width &&
-            event.clientY > campo.y &&
-            event.clientY < campo.y + campo.height
+            event.clientX > field.x &&
+            event.clientX < field.x + field.width &&
+            event.clientY > field.y &&
+            event.clientY < field.y + field.height
           ) {
-            this.plantar(campo.x, campo.y)
+            this.plant(field.x, field.y, this.grid[i][j])
           }
         })
       })
