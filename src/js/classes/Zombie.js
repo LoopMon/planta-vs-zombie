@@ -5,11 +5,12 @@ class Zombie {
     this.width = width
     this.height = height
     this.type = type
+    this.canMove = true
     this.speed = 0.05
     this.life = 10
     this.damage = 1
     this.attackTimer = 0
-    this.timeToAttack = 500
+    this.timeToAttack = 100
   }
 
   draw = (ctx) => {
@@ -18,11 +19,18 @@ class Zombie {
   }
 
   move = () => {
+    if (!this.canMove) return
     this.x -= this.speed
   }
 
   plantDetection = (plant) => {
-    if (plant.x + plant.width > this.x) {
+    if (
+      this.x + this.width >= plant.x &&
+      this.x <= plant.x + plant.width &&
+      this.y + this.height >= plant.y &&
+      this.y <= plant.y + plant.height
+    ) {
+      this.canMove = false
       this.attackPlant(plant)
     }
   }
@@ -32,6 +40,10 @@ class Zombie {
     if (this.attackTimer >= this.timeToAttack) {
       this.attackTimer = 0
       plant.life -= this.damage
+      if (plant.life <= 0) {
+        this.canMove = true
+      }
+      console.log("atacou")
     }
   }
 }

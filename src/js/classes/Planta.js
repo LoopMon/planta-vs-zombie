@@ -16,6 +16,7 @@ class Planta {
       simples: "green",
       duplo: "purple",
     }
+    this.life = 5
   }
 
   draw = (ctx) => {

@@ -53,7 +53,7 @@ class Game {
 
     this.plants.forEach((plant) => {
       plant.draw(this.ctx)
-      plant.drawFire(this.ctx)
+      // plant.drawFire(this.ctx)
     })
 
     this.zombies.forEach((zombie) => {
@@ -87,15 +87,40 @@ class Game {
       zombie.move()
     })
 
+    this.plants.forEach((plant, index) => {
+      this.zombies.forEach((zombie) => {
+        zombie.plantDetection(plant)
+      })
+      if (plant.life <= 0) {
+        this.plants.splice(index, 1)
+      }
+    })
+
     this.spawns()
   }
 
+  /**
+   * Informa ao jogador qual estado se encontra o mouse:
+   *
+   * - Livre;
+   *
+   * - Com planta na mão;
+   *
+   * - Para remover planta;
+   */
   drawMouseInfo = () => {
     this.ctx.fillStyle = "#0f0"
     this.ctx.font = "16px Arial"
     this.ctx.fillText(this.mouseState, this.mousePos[0], this.mousePos[1])
   }
 
+  /**
+   * Detecta se o mouse colidiu com um Sol
+   * presente no canvas.
+   *
+   * @param {Sol} sun
+   * @returns {void}
+   */
   collectSun = (sun) => {
     if (detectMouseCollision(this.mousePos, sun)) {
       this.mySuns += sun.value
@@ -114,7 +139,8 @@ class Game {
   }
 
   /**
-   * Cria um sol quando o `sunTimer` alcançar 1500.
+   * Cria um sol quando o `sunTimer`
+   * alcançar `timeToSpawnSun`.
    *
    * @returns {void}
    */
@@ -234,10 +260,17 @@ class Game {
       "#bb5"
     )
     this.painel.init()
-    this.grid = createGrid(this.cnv, this.painel, [1, 10])
+    this.grid = createGrid(this.cnv, this.painel, [3, 10])
     this.addEvents()
+    // para desenvolvimento
     this.zombies.push(
       createZombie(this.cnv.width, this.grid[0][0].y, 60, 70, "simples")
+    )
+    this.zombies.push(
+      createZombie(this.cnv.width, this.grid[1][0].y, 60, 70, "simples")
+    )
+    this.zombies.push(
+      createZombie(this.cnv.width, this.grid[2][0].y, 60, 70, "simples")
     )
     console.log("Starting Game!!!")
     this.run()
