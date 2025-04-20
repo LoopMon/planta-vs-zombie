@@ -25,8 +25,8 @@ function createPainel(x, y, width, height, corFundo) {
  * @returns {Sol} retorna uma instância do Sol
  */
 function createSun(x, y, width, height) {
-  const sol = new Sol(x, y, width, height)
-  return sol
+  const sun = new Sol(x, y, width, height)
+  return sun
 }
 
 /**
@@ -51,11 +51,11 @@ function createPlant(x, y, width, height, tipo) {
  * @param {number} y - posição Y
  * @param {number} width - largura
  * @param {number} height - altura
- * @param {string} tipo - classe de zombie
+ * @param {string} type - classe de zombie
  * @returns {Zombie} retorna uma instância do zombie
  */
-function createZombie(x, y, width, height, tipo) {
-  const zombie = new Zombie(x, y, width, height, tipo)
+function createZombie(x, y, width, height, type) {
+  const zombie = new Zombie(x, y, width, height, type)
   return zombie
 }
 
@@ -110,22 +110,22 @@ function createGrid(cnv, painel, dim = [5, 10]) {
  * @param {Object[]} elementos - Elementos para o painel
  * @returns {Item[]} retorna uma coleção de itens
  */
-function createPainelItens(painel, elementos) {
+function createPainelItens(painel, elements) {
   const items = []
 
   let gap = 10
   let posX = painel.areaPlayerSuns.x + painel.areaPlayerSuns.width + gap
   let posY = 10
 
-  for (let i = 1; i <= elementos.length; i++) {
+  for (let i = 1; i <= elements.length; i++) {
     if (i == 1) {
       items.push({
         x: posX,
         y: posY,
         width: 80,
         height: painel.height - posY * 2,
-        custo: elementos[i - 1].custo,
-        nome: elementos[i - 1].nome,
+        custo: elements[i - 1].custo,
+        nome: elements[i - 1].nome,
       })
     } else {
       items.push({
@@ -133,8 +133,8 @@ function createPainelItens(painel, elementos) {
         y: posY,
         width: 80,
         height: painel.height - posY * 2,
-        custo: elementos[i - 1].custo,
-        nome: elementos[i - 1].nome,
+        custo: elements[i - 1].custo,
+        nome: elements[i - 1].nome,
       })
     }
   }

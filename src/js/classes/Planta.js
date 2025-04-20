@@ -8,7 +8,7 @@ class Planta {
     this.timerFire = 0
     this.fireObj = {
       x: this.x + this.width - 5,
-      y: this.y + Math.floor(this.height / 2),
+      y: this.y + Math.floor(this.height / 3),
       scale: 10,
     }
     this.tipos = {
@@ -47,7 +47,7 @@ class Planta {
 
   fireColision = (zombie) => {
     if (this.fireObj.x > zombie.x) {
-      zombie.vida -= 1
+      zombie.life -= 1
       this.fireObj.x = this.x + this.width - 5
     }
   }

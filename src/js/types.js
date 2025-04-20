@@ -21,9 +21,9 @@
  * @property {number} y - posição y no plano
  * @property {number} width - largura do sol
  * @property {number} height - altura do sol
- * @property {string} cor - cor
- * @property {number} velocidade - velocidade da queda
- * @property {number} valor - valor do sol
+ * @property {string} color - cor
+ * @property {number} speed - velocidade da queda
+ * @property {number} value - valor do sol
  */
 
 /** Zombie
@@ -32,9 +32,9 @@
  * @property {number} y - posição y no plano
  * @property {number} width - largura do zombie
  * @property {number} height - altura do zombie
- * @property {string} tipo - classe de zombie
- * @property {number} velocidade - velocidade do zombie
- * @property {number} vida - vida do zombie
+ * @property {string} type - classe de zombie
+ * @property {number} speed - velocidade do zombie
+ * @property {number} life - vida do zombie
  */
 
 /** Planta
@@ -43,8 +43,8 @@
  * @property {number} y - posição y no plano
  * @property {number} width - largura da planta
  * @property {number} height - altura da planta
- * @property {string} tipo - classe de planta
- * @property {number} timerFire - temporizador para o ataque
+ * @property {string} type - classe de planta
+ * @property {number} timerToFire - temporizador para o ataque
  * @property {Object} fireObj - objeto de ataque
  */
 
@@ -54,8 +54,8 @@
  * @property {number} y - posição y no plano
  * @property {number} width - largura do item
  * @property {number} height - altura do item
- * @property {string} nome - nome para o item
- * @property {number} custo - valor para o item
+ * @property {string} name - nome para o item
+ * @property {number} cust - valor para o item
  */
 
 /** Painel
@@ -64,7 +64,7 @@
  * @property {number} y - posição y no plano
  * @property {number} width - largura do painel
  * @property {number} height - altura do painel
- * @property {string} corFundo - cor para o fundo do painel
+ * @property {string} backgroundColor - cor para o fundo do painel
  * @property {Item[]} items - coleção de itens para o painel
  */
 
@@ -72,17 +72,18 @@
  * @typedef {Object} Game
  * @property {HTMLCanvasElement} cnv - elemento canvas
  * @property {CanvasRenderingContext2D} ctx - contexto do canvas
- * @property {Object} mouseEstados - estados do mouse
- * @property {number} mouseEstadoAtual - estado atual do mouse
+ * @property {Object} mouseFlags - estados do mouse
+ * @property {number} mouseState - estado atual do mouse
+ * @property {Object} gameFlags - estados do jogo
+ * @property {number} gameState - estado atual do jogo
  * @property {number[]} mousePos - posição do mouse X e Y
- * @property {Object} gameEstados - estados do jogo
- * @property {number} gameEstadoAtual - estado atual do jogo
- * @property {Item} plantaAtual - planta atual
+ * @property {Item} currentPlant - planta atual
  * @property {Painel} painel - painel do jogo
  * @property {Grid[][]} grid - coleção de grids
- * @property {Planta[]} plantas - coleção de plantas
+ * @property {Planta[]} plants - coleção de plantas
  * @property {Zombie[]} zombies - coleção de zombies
- * @property {Sol[]} sois - coleção de sois
- * @property {number} meusSois - quantidade de sois coletados
- * @property {number} timerSol - temporizador para o sol nascer
+ * @property {Sol[]} suns - coleção de sois
+ * @property {number} mySuns - quantidade de sois coletados
+ * @property {number} sunTimer - temporizador para o sol nascer
+ * @property {number} timerToSpawnSun - tempo limite para o sol nascer
  */

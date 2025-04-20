@@ -29,8 +29,9 @@ class Game {
     this.zombies = []
     this.suns = []
     this.mySuns = 1_000_000 // para desenvolvimento
-    this.timerSol = 0
-
+    this.sunTimer = 0
+    this.timeToSpawnSun = 1250
+    // Definindo largura e altura do canvas para dimensões da tela
     this.cnv.width = window.innerWidth
     this.cnv.height = window.innerHeight
   }
@@ -52,6 +53,11 @@ class Game {
 
     this.plants.forEach((plant) => {
       plant.draw(this.ctx)
+      plant.drawFire(this.ctx)
+    })
+
+    this.zombies.forEach((zombie) => {
+      zombie.draw(this.ctx)
     })
 
     this.suns.forEach((sun) => {
@@ -76,6 +82,11 @@ class Game {
         this.suns.splice(index, 1)
       }
     })
+
+    this.zombies.forEach((zombie) => {
+      zombie.move()
+    })
+
     this.spawns()
   }
 
@@ -87,7 +98,7 @@ class Game {
 
   collectSun = (sun) => {
     if (detectMouseCollision(this.mousePos, sun)) {
-      this.mySuns += sun.valor
+      this.mySuns += sun.value
       this.suns.splice(this.suns.indexOf(sun), 1)
     }
   }
@@ -99,10 +110,19 @@ class Game {
    * @returns {void}
    */
   spawns = () => {
-    this.timerSol += 1
-    if (this.timerSol > 1000) {
-      this.spawnSun()
-      this.timerSol = 0
+    this.spawnSun()
+  }
+
+  /**
+   * Cria um sol quando o `sunTimer` alcançar 1500.
+   *
+   * @returns {void}
+   */
+  spawnSun = () => {
+    this.sunTimer += 1
+    if (this.sunTimer > this.timeToSpawnSun) {
+      this.addSun()
+      this.sunTimer = 0
     }
   }
 
@@ -111,15 +131,10 @@ class Game {
    *
    * @returns {void}
    */
-  spawnSun = () => {
-    this.suns.push(
-      createSun(
-        Math.floor(Math.random() * this.cnv.width - 40) + 40,
-        Math.floor(Math.random() * -30),
-        30,
-        30
-      )
-    )
+  addSun = () => {
+    const x = Math.floor(Math.random() * this.cnv.width)
+    const y = Math.floor(Math.random())
+    this.suns.push(createSun(x, y))
   }
 
   /**
@@ -221,6 +236,9 @@ class Game {
     this.painel.init()
     this.grid = createGrid(this.cnv, this.painel, [1, 10])
     this.addEvents()
+    this.zombies.push(
+      createZombie(this.cnv.width, this.grid[0][0].y, 60, 70, "simples")
+    )
     console.log("Starting Game!!!")
     this.run()
   }

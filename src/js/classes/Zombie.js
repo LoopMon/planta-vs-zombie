@@ -1,12 +1,15 @@
 class Zombie {
-  constructor(x, y, width, height, tipo) {
+  constructor(x, y, width, height, type) {
     this.x = x
     this.y = y
     this.width = width
     this.height = height
-    this.tipo = tipo
-    this.velocidade = 0.1
-    this.vida = 10
+    this.type = type
+    this.speed = 0.05
+    this.life = 10
+    this.damage = 1
+    this.attackTimer = 0
+    this.timeToAttack = 500
   }
 
   draw = (ctx) => {
@@ -15,6 +18,20 @@ class Zombie {
   }
 
   move = () => {
-    this.x -= this.velocidade
+    this.x -= this.speed
+  }
+
+  plantDetection = (plant) => {
+    if (plant.x + plant.width > this.x) {
+      this.attackPlant(plant)
+    }
+  }
+
+  attackPlant = (plant) => {
+    this.attackTimer += 1
+    if (this.attackTimer >= this.timeToAttack) {
+      this.attackTimer = 0
+      plant.life -= this.damage
+    }
   }
 }
