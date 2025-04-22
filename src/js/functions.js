@@ -7,11 +7,11 @@
  * @param {number} y - posição Y
  * @param {number} width - largura
  * @param {number} height - altura
- * @param {string} corFundo - cor de fundo
+ * @param {string} backgroundColor - cor de fundo
  * @returns {Painel} retorna uma instância do Painel
  */
-function createPainel(x, y, width, height, corFundo) {
-  const painel = new Painel(x, y, width, height, corFundo)
+function createPainel(x, y, width, height, backgroundColor) {
+  const painel = new Painel(x, y, width, height, backgroundColor)
   return painel
 }
 
@@ -20,12 +20,10 @@ function createPainel(x, y, width, height, corFundo) {
  *
  * @param {number} x - posição X
  * @param {number} y - posição Y
- * @param {number} width - largura
- * @param {number} height - altura
- * @returns {Sol} retorna uma instância do Sol
+ * @returns {Sun} retorna uma instância do Sol
  */
-function createSun(x, y, width, height) {
-  const sun = new Sol(x, y, width, height)
+function createSun(x, y) {
+  const sun = new Sun(x, y)
   return sun
 }
 
@@ -36,12 +34,12 @@ function createSun(x, y, width, height) {
  * @param {number} y - posição Y
  * @param {number} width - largura
  * @param {number} height - altura
- * @param {string} tipo - classe de planta
- * @returns {Planta} retorna uma instância da Planta
+ * @param {string} type - classe de planta
+ * @returns {Plant} retorna uma instância da Planta
  */
-function createPlant(x, y, width, height, tipo) {
-  const planta = new Planta(x, y, width, height, tipo)
-  return planta
+function createPlant(x, y, width, height, type) {
+  const plant = new Plant(x, y, width, height, type)
+  return plant
 }
 
 /**

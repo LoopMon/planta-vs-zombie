@@ -4,7 +4,7 @@ class Game {
    *
    * @param {HTMLCanvasElement} cnv - Elemento canvas HTML
    * @param {CanvasRenderingContext2D} ctx - Contexto de renderização do canvas
-   * @returns {Game} Instância do jogo
+   * @returns {Game}
    */
   constructor(cnv, ctx) {
     this.cnv = cnv
@@ -25,8 +25,8 @@ class Game {
     this.currentPlant = {}
     this.painel = null
     this.grid = null
+    this.wave = null
     this.plants = []
-    this.zombies = []
     this.suns = []
     this.mySuns = 1_000_000 // para desenvolvimento
     this.sunTimer = 0
@@ -42,7 +42,7 @@ class Game {
    * @returns {void}
    */
   draw = () => {
-    this.painel.draw(this.ctx, this.mySuns)
+    this.painel.drawRect(this.ctx, this.mySuns)
 
     this.grid.forEach((line) => {
       line.forEach((field) => {
@@ -52,17 +52,13 @@ class Game {
     })
 
     this.plants.forEach((plant) => {
-      plant.draw(this.ctx)
-      // plant.drawFire(this.ctx)
+      plant.drawRect(this.ctx)
+      // plant fire (futuro)
     })
 
-    this.zombies.forEach((zombie) => {
-      zombie.draw(this.ctx)
-    })
+    this.wave.drawZombies(this.ctx)
 
-    this.suns.forEach((sun) => {
-      sun.draw(this.ctx)
-    })
+    this.suns.forEach((sun) => sun.drawRect(this.ctx))
 
     this.drawMouseInfo()
   }
@@ -83,18 +79,16 @@ class Game {
       }
     })
 
-    this.zombies.forEach((zombie) => {
-      zombie.move()
+    this.wave.zombies.forEach((zombie) => {
+      this.plants.forEach((plant, index) => {
+        zombie.plantDetection(plant)
+        if (plant.life <= 0) {
+          this.plants.splice(index, 1)
+        }
+      })
     })
 
-    this.plants.forEach((plant, index) => {
-      this.zombies.forEach((zombie) => {
-        zombie.plantDetection(plant)
-      })
-      if (plant.life <= 0) {
-        this.plants.splice(index, 1)
-      }
-    })
+    this.wave.updateZombies()
 
     this.spawns()
   }
@@ -115,20 +109,6 @@ class Game {
   }
 
   /**
-   * Detecta se o mouse colidiu com um Sol
-   * presente no canvas.
-   *
-   * @param {Sol} sun
-   * @returns {void}
-   */
-  collectSun = (sun) => {
-    if (detectMouseCollision(this.mousePos, sun)) {
-      this.mySuns += sun.value
-      this.suns.splice(this.suns.indexOf(sun), 1)
-    }
-  }
-
-  /**
    * Chama os métodos para criar os objetos
    * que nascem por tempo.
    *
@@ -136,6 +116,21 @@ class Game {
    */
   spawns = () => {
     this.spawnSun()
+    this.wave.spawnZombie()
+  }
+
+  /**
+   * Detecta se o mouse colidiu com um Sol
+   * presente no canvas.
+   *
+   * @param {Sun} sun
+   * @returns {void}
+   */
+  collectSun = (sun) => {
+    if (!detectMouseCollision(this.mousePos, sun)) return
+
+    this.mySuns += sun.value
+    this.suns.splice(this.suns.indexOf(sun), 1)
   }
 
   /**
@@ -178,7 +173,6 @@ class Game {
     if (this.currentPlant && this.mySuns >= this.currentPlant.custo) {
       this.plants.push(createPlant(x, y, 40, 60, this.currentPlant.nome))
       grid.value = this.currentPlant.nome
-      console.log(grid)
 
       this.mySuns -= this.currentPlant.custo
       this.currentPlant = {}
@@ -187,7 +181,7 @@ class Game {
   }
 
   /**
-   * Limpa a tela do canvas
+   * Limpa a tela do canvas.
    *
    * @returns {void}
    */
@@ -234,7 +228,7 @@ class Game {
 
   /**
    * Loop do jogo, vai chamar a função
-   * para desenhar e atualizar
+   * para desenhar e atualizar.
    *
    * @returns {void}
    */
@@ -260,18 +254,11 @@ class Game {
       "#bb5"
     )
     this.painel.init()
-    this.grid = createGrid(this.cnv, this.painel, [3, 10])
+    this.grid = createGrid(this.cnv, this.painel, [3, 13])
+    this.wave = new Wave(this.grid.map((_, index) => this.grid[index][0].y))
+    console.log(this.wave.gridRowsPos)
     this.addEvents()
-    // para desenvolvimento
-    this.zombies.push(
-      createZombie(this.cnv.width, this.grid[0][0].y, 60, 70, "simples")
-    )
-    this.zombies.push(
-      createZombie(this.cnv.width, this.grid[1][0].y, 60, 70, "simples")
-    )
-    this.zombies.push(
-      createZombie(this.cnv.width, this.grid[2][0].y, 60, 70, "simples")
-    )
+
     console.log("Starting Game!!!")
     this.run()
   }

@@ -1,22 +1,23 @@
 /** Retângulo
- * @typedef {Object} Retangulo
- * @property {number} x - Posição X do Retangulo.
- * @property {number} y - Posição Y do Retangulo.
- * @property {number} width - Largura.
- * @property {number} height - Altura.
+ * @typedef {Object} Rectangle
+ * @property {number} x - Posição X do Retangulo
+ * @property {number} y - Posição Y do Retangulo
+ * @property {number} width - Largura
+ * @property {number} height - Altura
+ * @property {string} color - cor
  */
 
 /** Grid
  * @typedef {Object} Grid
- * @property {number} x - Posição X do item no grid.
- * @property {number} y - Posição Y do item no grid.
- * @property {number} width - Largura do item.
- * @property {number} height - Altura do item.
- * @property {string} value - item no grid.
+ * @property {number} x - Posição X do item no grid
+ * @property {number} y - Posição Y do item no grid
+ * @property {number} width - Largura do item
+ * @property {number} height - Altura do item
+ * @property {string} value - item no grid
  */
 
 /** Sol
- * @typedef {Object} Sol
+ * @typedef {Object} Sun
  * @property {number} x - posição x no plano
  * @property {number} y - posição y no plano
  * @property {number} width - largura do sol
@@ -38,7 +39,7 @@
  */
 
 /** Planta
- * @typedef {Object} Planta
+ * @typedef {Object} Plant
  * @property {number} x - posição x no plano
  * @property {number} y - posição y no plano
  * @property {number} width - largura da planta
@@ -80,9 +81,9 @@
  * @property {Item} currentPlant - planta atual
  * @property {Painel} painel - painel do jogo
  * @property {Grid[][]} grid - coleção de grids
- * @property {Planta[]} plants - coleção de plantas
+ * @property {Plant[]} plants - coleção de plantas
  * @property {Zombie[]} zombies - coleção de zombies
- * @property {Sol[]} suns - coleção de sois
+ * @property {Sun[]} suns - coleção de sois
  * @property {number} mySuns - quantidade de sois coletados
  * @property {number} sunTimer - temporizador para o sol nascer
  * @property {number} timerToSpawnSun - tempo limite para o sol nascer
