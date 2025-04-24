@@ -1,63 +1,6 @@
 /// <reference path="./types.js" />
 
 /**
- * Cria um painel para o jogo
- *
- * @param {number} x - posição X
- * @param {number} y - posição Y
- * @param {number} width - largura
- * @param {number} height - altura
- * @param {string} backgroundColor - cor de fundo
- * @returns {Painel} retorna uma instância do Painel
- */
-function createPainel(x, y, width, height, backgroundColor) {
-  const painel = new Painel(x, y, width, height, backgroundColor)
-  return painel
-}
-
-/**
- * Cria um sol
- *
- * @param {number} x - posição X
- * @param {number} y - posição Y
- * @returns {Sun} retorna uma instância do Sol
- */
-function createSun(x, y) {
-  const sun = new Sun(x, y)
-  return sun
-}
-
-/**
- * Cria uma planta
- *
- * @param {number} x - posição X
- * @param {number} y - posição Y
- * @param {number} width - largura
- * @param {number} height - altura
- * @param {string} type - classe de planta
- * @returns {Plant} retorna uma instância da Planta
- */
-function createPlant(x, y, width, height, type) {
-  const plant = new Plant(x, y, width, height, type)
-  return plant
-}
-
-/**
- * Cria um zombie
- *
- * @param {number} x - posição X
- * @param {number} y - posição Y
- * @param {number} width - largura
- * @param {number} height - altura
- * @param {string} type - classe de zombie
- * @returns {Zombie} retorna uma instância do zombie
- */
-function createZombie(x, y, width, height, type) {
-  const zombie = new Zombie(x, y, width, height, type)
-  return zombie
-}
-
-/**
  * Cria o grid onde vamos plantar as plantas
  *
  * @param {Painel} painel - Painel do jogo
