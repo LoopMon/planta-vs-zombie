@@ -79,16 +79,9 @@ class Game {
       }
     })
 
-    this.wave.zombies.forEach((zombie) => {
-      this.plants.forEach((plant, index) => {
-        zombie.plantDetection(plant)
-        if (plant.life <= 0) {
-          this.plants.splice(index, 1)
-        }
-      })
-    })
+    this.wave.attackPlants(this.plants)
 
-    this.wave.updateZombies()
+    this.wave.moveZombies()
 
     this.spawns()
   }
@@ -233,7 +226,7 @@ class Game {
    * @returns {void}
    */
   run = () => {
-    this.clearCanvas()
+    this.clearCanvas(this.ctx)
     this.draw()
     this.update()
     window.requestAnimationFrame(this.run)
@@ -254,7 +247,7 @@ class Game {
       "#bb5"
     )
     this.painel.init()
-    this.grid = createGrid(this.cnv, this.painel, [3, 13])
+    this.grid = createGrid(this.cnv, this.painel, [5, 13])
     this.wave = new Wave(this.grid.map((_, index) => this.grid[index][0].y))
     console.log(this.wave.gridRowsPos)
     this.addEvents()

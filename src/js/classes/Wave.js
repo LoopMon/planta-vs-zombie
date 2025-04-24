@@ -16,9 +16,35 @@ class Wave {
     })
   }
 
-  updateZombies() {
+  moveZombies() {
     this.zombies.forEach((zombie) => {
       zombie.move()
+    })
+  }
+
+  attackPlants(plants) {
+    this.zombies.forEach((zombie) => {
+      const plantsCopy = [...plants]
+
+      plantsCopy.forEach((plant) => {
+        zombie.plantDetection(plant)
+
+        if (plant.life <= 0) {
+          // Antes de remover a planta, liberamos todos os zombies que a estavam atacando
+          this.zombies.forEach((z) => {
+            if (z.targetPlant === plant) {
+              z.canMove = true
+              z.targetPlant = null
+            }
+          })
+
+          // Removemos a planta do array original
+          const realIndex = plants.indexOf(plant)
+          if (realIndex !== -1) {
+            plants.splice(realIndex, 1)
+          }
+        }
+      })
     })
   }
 
@@ -42,6 +68,4 @@ class Wave {
       console.log("Wave: zombie spawned")
     }
   }
-
-  init() {}
 }
