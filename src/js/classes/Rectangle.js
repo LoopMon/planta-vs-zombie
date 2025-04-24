@@ -32,11 +32,12 @@ class Rectangle {
    * Desenha o contorno do retângulo.
    *
    * @param {CanvasRenderingContext2D} ctx - Contexto de renderização do canvas
+   * @param {string} color - cor para o contorno
    * @param {number} lineWidth - largura do contorno
    * @returns {void}
    */
-  drawStroke(ctx, lineWidth = 1) {
-    ctx.strokeStyle = this.color
+  drawStroke(ctx, color = null, lineWidth = 1) {
+    ctx.strokeStyle = !!color ? color : this.color
     ctx.lineWidth = lineWidth
     ctx.strokeRect(this.x, this.y, this.width, this.height)
   }
@@ -54,5 +55,18 @@ class Rectangle {
       this.y + this.height < obj.y ||
       this.y > obj.y + obj.height
     )
+  }
+
+  /**
+   * Move o retângulo de acordo com os
+   * valores de `x` e `y`.
+   *
+   * @param {number} x - valor para mover na horizontal
+   * @param {number} y - valor para mover na vertical
+   * @returns {void}
+   */
+  move(x, y) {
+    this.x += x
+    this.y += y
   }
 }

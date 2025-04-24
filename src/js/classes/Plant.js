@@ -2,12 +2,9 @@ class Plant extends Rectangle {
   constructor(x, y, width, height, type) {
     super(x, y, width, height)
     this.type = type
-    this.timerFire = 0
-    this.fireObj = new Rectangle(
-      this.x + this.width - 5,
-      this.y + Math.floor(this.height / 3),
-      10
-    )
+    this.bullets = []
+    this.fireTimer = 0
+    this.timeToFire = 100
     this.types = {
       pedra: "brown",
       simples: "green",
@@ -18,26 +15,60 @@ class Plant extends Rectangle {
     this.gridPos = [0, 0] // para usar quando for remover uma planta do grid
   }
 
-  zombieDetection(zombie, ctx) {
-    if (this.x < zombie.x) {
-      this.fire()
-      this.drawFire(ctx)
-      this.fireColision(zombie)
-    }
-  }
-
+  /**
+   * Desenha os disparos da planta.
+   *
+   * @param {CanvasRenderingContext2D} ctx
+   */
   drawFire(ctx) {
-    this.fireObj.drawRect(ctx)
+    this.bullets.forEach((bullet) => {
+      bullet.drawRect(ctx)
+    })
   }
 
+  /**
+   * Para cada bala presente na planta, elas se
+   * moverão para a direita.
+   */
   fire() {
-    this.fireObj.x += 2
+    this.bullets.forEach((bullet) => {
+      bullet.move()
+    })
   }
 
-  fireColision(zombie) {
-    if (this.fireObj.x > zombie.x) {
-      zombie.life -= 1
-      this.fireObj.x = this.x + this.width - 5
+  /**
+   * Verifica se existe zombie na frente da planta.
+   *
+   * @param {Zombie} zombie
+   */
+  zombieDetection(zombie) {
+    if (this.y == zombie.y) {
+      this.fireTimer += 1
+
+      if (this.fireTimer >= this.timeToFire) {
+        this.bullets.push(
+          new Bullet(this.x + this.width, this.y + this.height / 4)
+        )
+        this.fireTimer = 0
+      }
     }
+  }
+
+  /**
+   * Verifica as colisões dos disparos e o
+   * remove se ele colidir com um `zombie`
+   * ou sair da tela.
+   *
+   * @param {Zombie} zombie
+   */
+  fireColision(zombie) {
+    this.bullets = this.bullets.filter((bullet) => {
+      const hitZombie = bullet.isCollidingWith(zombie)
+      if (hitZombie) {
+        zombie.takeDamage()
+        return false
+      }
+      return bullet.x <= window.innerWidth
+    })
   }
 }

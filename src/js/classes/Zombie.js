@@ -18,7 +18,7 @@ class Zombie extends Rectangle {
    */
   move() {
     if (!this.canMove) return
-    this.x -= this.speed
+    super.move(-this.speed, 0)
   }
 
   /**
@@ -60,5 +60,12 @@ class Zombie extends Rectangle {
       }
       console.log("atacou")
     }
+  }
+
+  /**
+   * Tira 1 de vida do zombie.
+   */
+  takeDamage() {
+    this.life -= 1
   }
 }
