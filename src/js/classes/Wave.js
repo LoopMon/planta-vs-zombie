@@ -1,7 +1,7 @@
 class Wave {
   zombies = []
   zombiesRound = 0
-  maxZombiesPerRound = 8
+  maxZombiesPerRound = 2
   round = 0
   spawnTimer = 0
   timeToSpawnZombie = 100
@@ -13,6 +13,7 @@ class Wave {
   drawZombies(ctx) {
     this.zombies.forEach((zombie) => {
       zombie.drawRect(ctx)
+      zombie.drawStroke(ctx, "#000")
     })
   }
 
@@ -56,7 +57,7 @@ class Wave {
       this.zombiesRound < this.maxZombiesPerRound
     ) {
       this.zombies.push(
-        createZombie(
+        new Zombie(
           window.innerWidth,
           this.gridRowsPos[Math.floor(Math.random() * this.gridRowsPos.length)],
           50,
@@ -65,7 +66,10 @@ class Wave {
       )
       this.zombiesRound += 1
       this.spawnTimer = 0
-      console.log("Wave: zombie spawned")
     }
+  }
+
+  checkZombiesLife() {
+    this.zombies = this.zombies.filter((zombie) => zombie.life > 0)
   }
 }
