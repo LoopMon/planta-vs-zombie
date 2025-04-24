@@ -7,11 +7,11 @@
  * @param {number} y - posição Y
  * @param {number} width - largura
  * @param {number} height - altura
- * @param {string} corFundo - cor de fundo
+ * @param {string} backgroundColor - cor de fundo
  * @returns {Painel} retorna uma instância do Painel
  */
-function createPainel(x, y, width, height, corFundo) {
-  const painel = new Painel(x, y, width, height, corFundo)
+function createPainel(x, y, width, height, backgroundColor) {
+  const painel = new Painel(x, y, width, height, backgroundColor)
   return painel
 }
 
@@ -20,13 +20,11 @@ function createPainel(x, y, width, height, corFundo) {
  *
  * @param {number} x - posição X
  * @param {number} y - posição Y
- * @param {number} width - largura
- * @param {number} height - altura
- * @returns {Sol} retorna uma instância do Sol
+ * @returns {Sun} retorna uma instância do Sol
  */
-function createSun(x, y, width, height) {
-  const sol = new Sol(x, y, width, height)
-  return sol
+function createSun(x, y) {
+  const sun = new Sun(x, y)
+  return sun
 }
 
 /**
@@ -36,12 +34,12 @@ function createSun(x, y, width, height) {
  * @param {number} y - posição Y
  * @param {number} width - largura
  * @param {number} height - altura
- * @param {string} tipo - classe de planta
- * @returns {Planta} retorna uma instância da Planta
+ * @param {string} type - classe de planta
+ * @returns {Plant} retorna uma instância da Planta
  */
-function createPlant(x, y, width, height, tipo) {
-  const planta = new Planta(x, y, width, height, tipo)
-  return planta
+function createPlant(x, y, width, height, type) {
+  const plant = new Plant(x, y, width, height, type)
+  return plant
 }
 
 /**
@@ -51,11 +49,11 @@ function createPlant(x, y, width, height, tipo) {
  * @param {number} y - posição Y
  * @param {number} width - largura
  * @param {number} height - altura
- * @param {string} tipo - classe de zombie
+ * @param {string} type - classe de zombie
  * @returns {Zombie} retorna uma instância do zombie
  */
-function createZombie(x, y, width, height, tipo) {
-  const zombie = new Zombie(x, y, width, height, tipo)
+function createZombie(x, y, width, height, type) {
+  const zombie = new Zombie(x, y, width, height, type)
   return zombie
 }
 
@@ -110,22 +108,22 @@ function createGrid(cnv, painel, dim = [5, 10]) {
  * @param {Object[]} elementos - Elementos para o painel
  * @returns {Item[]} retorna uma coleção de itens
  */
-function createPainelItens(painel, elementos) {
+function createPainelItens(painel, elements) {
   const items = []
 
   let gap = 10
   let posX = painel.areaPlayerSuns.x + painel.areaPlayerSuns.width + gap
   let posY = 10
 
-  for (let i = 1; i <= elementos.length; i++) {
+  for (let i = 1; i <= elements.length; i++) {
     if (i == 1) {
       items.push({
         x: posX,
         y: posY,
         width: 80,
         height: painel.height - posY * 2,
-        custo: elementos[i - 1].custo,
-        nome: elementos[i - 1].nome,
+        custo: elements[i - 1].custo,
+        nome: elements[i - 1].nome,
       })
     } else {
       items.push({
@@ -133,8 +131,8 @@ function createPainelItens(painel, elementos) {
         y: posY,
         width: 80,
         height: painel.height - posY * 2,
-        custo: elementos[i - 1].custo,
-        nome: elementos[i - 1].nome,
+        custo: elements[i - 1].custo,
+        nome: elements[i - 1].nome,
       })
     }
   }

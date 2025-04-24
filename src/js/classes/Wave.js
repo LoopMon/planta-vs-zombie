@@ -1,0 +1,71 @@
+class Wave {
+  zombies = []
+  zombiesRound = 0
+  maxZombiesPerRound = 8
+  round = 0
+  spawnTimer = 0
+  timeToSpawnZombie = 100
+
+  constructor(gridRowsPos) {
+    this.gridRowsPos = gridRowsPos
+  }
+
+  drawZombies(ctx) {
+    this.zombies.forEach((zombie) => {
+      zombie.drawRect(ctx)
+    })
+  }
+
+  moveZombies() {
+    this.zombies.forEach((zombie) => {
+      zombie.move()
+    })
+  }
+
+  attackPlants(plants) {
+    this.zombies.forEach((zombie) => {
+      const plantsCopy = [...plants]
+
+      plantsCopy.forEach((plant) => {
+        zombie.plantDetection(plant)
+
+        if (plant.life <= 0) {
+          // Antes de remover a planta, liberamos todos os zombies que a estavam atacando
+          this.zombies.forEach((z) => {
+            if (z.targetPlant === plant) {
+              z.canMove = true
+              z.targetPlant = null
+            }
+          })
+
+          // Removemos a planta do array original
+          const realIndex = plants.indexOf(plant)
+          if (realIndex !== -1) {
+            plants.splice(realIndex, 1)
+          }
+        }
+      })
+    })
+  }
+
+  spawnZombie() {
+    this.spawnTimer += 1
+
+    if (
+      this.spawnTimer >= this.timeToSpawnZombie &&
+      this.zombiesRound < this.maxZombiesPerRound
+    ) {
+      this.zombies.push(
+        createZombie(
+          window.innerWidth,
+          this.gridRowsPos[Math.floor(Math.random() * this.gridRowsPos.length)],
+          50,
+          70
+        )
+      )
+      this.zombiesRound += 1
+      this.spawnTimer = 0
+      console.log("Wave: zombie spawned")
+    }
+  }
+}

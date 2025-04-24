@@ -1,38 +1,36 @@
-class Painel {
-  constructor(x, y, width, height, corFundo) {
-    this.x = x
-    this.y = y
-    this.width = width
-    this.height = height
-    this.corFundo = corFundo
+class Painel extends Rectangle {
+  /**
+   * Cria o painel do jogo.
+   *
+   * @param {number} x - posição x do painel no canvas
+   * @param {number} y - posição y do painel no canvas
+   * @param {number} width - largura do painel
+   * @param {number} height - altura do painel
+   * @param {string} backgroundColor - cor do painel
+   * @returns {Painel}
+   */
+  constructor(x, y, width, height, backgroundColor) {
+    super(x, y, width, height, backgroundColor)
     this.items = []
-    this.areaPlayerSuns = {
-      x: this.x + 5,
-      y: this.y + 5,
-      width: 100,
-      height: this.height - 10,
-      color: "brown",
-    }
+    this.areaPlayerSuns = new Rectangle(
+      this.x + 5,
+      this.y + 5,
+      100,
+      this.height - 10,
+      "brown"
+    )
   }
 
-  draw = (ctx, playerSuns) => {
-    // PAINEL
-    ctx.fillStyle = this.corFundo
-    ctx.fillRect(this.x, this.y, this.width, this.height)
+  drawRect(ctx, playerSuns) {
+    super.drawRect(ctx)
 
     this.drawPlayerSuns(ctx, playerSuns)
     this.drawItens(ctx)
   }
 
-  drawPlayerSuns = (ctx, playerSuns) => {
+  drawPlayerSuns(ctx, playerSuns) {
     // AREA PLAYER SUNS
-    ctx.fillStyle = this.areaPlayerSuns.color
-    ctx.fillRect(
-      this.areaPlayerSuns.x,
-      this.areaPlayerSuns.y,
-      this.areaPlayerSuns.width,
-      this.areaPlayerSuns.height
-    )
+    this.areaPlayerSuns.drawRect(ctx)
     // PLAYER SUNS
     let tamanhoFonte = 24
     ctx.fillStyle = "#ff0"
@@ -45,7 +43,7 @@ class Painel {
     )
   }
 
-  drawItens = (ctx) => {
+  drawItens(ctx) {
     this.items.forEach((item) => {
       let tamanhoFonte = 12
       // ITEM TEXT
@@ -66,7 +64,7 @@ class Painel {
     })
   }
 
-  init = () => {
+  init() {
     const elementos = [
       {
         nome: "simples",
