@@ -35,8 +35,16 @@ cd planta-vs-zombie
 
 ## Amostra do jogo (por enquanto)
 
+### Grid e painel com os itens (plantas) para usar.
+
 <div align="center">
 <img align="center" width="455" height="203" src="./docs/img/layout.png">
+</div>
+
+### Jogo com os elementos agindo.
+
+<div align="center">
+<img align="center" width="455" height="203" src="./docs/img/layout-with-elements.png">
 </div>
 
 ---
