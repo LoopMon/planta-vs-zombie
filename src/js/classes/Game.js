@@ -38,8 +38,6 @@ class Game {
 
   /**
    * Responsável por desenhar os elementos do jogo.
-   *
-   * @returns {void}
    */
   draw = () => {
     this.painel.drawRect(this.ctx, this.mySuns)
@@ -53,7 +51,7 @@ class Game {
 
     this.plants.forEach((plant) => {
       plant.drawRect(this.ctx)
-      // plant fire (futuro)
+      plant.drawFire(this.ctx)
     })
 
     this.wave.drawZombies(this.ctx)
@@ -66,8 +64,6 @@ class Game {
   /**
    * Responsável por verificar a atualização
    * dos elementos do jogo.
-   *
-   * @returns {void}
    */
   update = () => {
     this.suns.forEach((sun, index) => {
@@ -79,9 +75,22 @@ class Game {
       }
     })
 
+    this.plants.forEach((plant) => {
+      this.wave.zombies.forEach((zombie) => {
+        plant.zombieDetection(zombie)
+      })
+    })
+
+    this.plants.forEach((plant) => {
+      plant.bullets.forEach((bullet) => bullet.move())
+      this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
+    })
+
     this.wave.attackPlants(this.plants)
 
     this.wave.moveZombies()
+
+    this.wave.checkZombiesLife()
 
     this.spawns()
   }
@@ -104,8 +113,6 @@ class Game {
   /**
    * Chama os métodos para criar os objetos
    * que nascem por tempo.
-   *
-   * @returns {void}
    */
   spawns = () => {
     this.spawnSun()
@@ -117,7 +124,6 @@ class Game {
    * presente no canvas.
    *
    * @param {Sun} sun
-   * @returns {void}
    */
   collectSun = (sun) => {
     if (!detectMouseCollision(this.mousePos, sun)) return
@@ -129,8 +135,6 @@ class Game {
   /**
    * Cria um sol quando o `sunTimer`
    * alcançar `timeToSpawnSun`.
-   *
-   * @returns {void}
    */
   spawnSun = () => {
     this.sunTimer += 1
@@ -142,13 +146,11 @@ class Game {
 
   /**
    * Adiciona um sol a coleção de sois.
-   *
-   * @returns {void}
    */
   addSun = () => {
     const x = Math.floor(Math.random() * this.cnv.width)
     const y = Math.floor(Math.random())
-    this.suns.push(createSun(x, y))
+    this.suns.push(new Sun(x, y))
   }
 
   /**
@@ -158,13 +160,12 @@ class Game {
    * @param {number} x - x de um campo do grid
    * @param {number} y - y de um campo do grid
    * @param {Grid} grid - grid para plantar
-   * @returns {void}
    */
   plant = (x, y, grid) => {
     if (!!grid.value) return
 
     if (this.currentPlant && this.mySuns >= this.currentPlant.custo) {
-      this.plants.push(createPlant(x, y, 40, 60, this.currentPlant.nome))
+      this.plants.push(new Plant(x, y, 40, 60, this.currentPlant.nome))
       grid.value = this.currentPlant.nome
 
       this.mySuns -= this.currentPlant.custo
@@ -173,16 +174,23 @@ class Game {
     }
   }
 
+  removePlant = (x, y, grid) => {
+    if (this.mouseState == this.mouseFlags.remove) {
+      // iterar nas plantas
+    }
+  }
+
   /**
    * Limpa a tela do canvas.
-   *
-   * @returns {void}
    */
   clearCanvas = () => {
     this.ctx.fillStyle = "#964b00"
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height)
   }
 
+  /**
+   * Adiciona os eventos ao documento.
+   */
   addEvents = () => {
     document.addEventListener("click", (event) => {
       this.painel.items.forEach((item) => {
@@ -213,6 +221,30 @@ class Game {
       })
     })
 
+    document.addEventListener("keyup", (event) => {
+      if (event.key.toLowerCase() === "r") {
+        this.mouseState =
+          this.mouseState === this.mouseFlags.remove
+            ? this.mouseFlags.free
+            : this.mouseFlags.remove
+      }
+    })
+
+    document.addEventListener("click", (event) => {
+      this.grid.forEach((line, i) => {
+        line.forEach((field, j) => {
+          if (
+            event.clientX > field.x &&
+            event.clientX < field.x + field.width &&
+            event.clientY > field.y &&
+            event.clientY < field.y + field.height
+          ) {
+            this.removePlant(field.x, field.y, this.grid[i][j])
+          }
+        })
+      })
+    })
+
     document.addEventListener("mousemove", (event) => {
       this.mousePos[0] = event.clientX
       this.mousePos[1] = event.clientY
@@ -222,8 +254,6 @@ class Game {
   /**
    * Loop do jogo, vai chamar a função
    * para desenhar e atualizar.
-   *
-   * @returns {void}
    */
   run = () => {
     this.clearCanvas(this.ctx)
@@ -235,11 +265,9 @@ class Game {
   /**
    * Inicia o jogo criando os
    * itens principais para jogar.
-   *
-   * @returns {void}
    */
   init = () => {
-    this.painel = createPainel(
+    this.painel = new Painel(
       0,
       0,
       this.cnv.width,
@@ -249,7 +277,6 @@ class Game {
     this.painel.init()
     this.grid = createGrid(this.cnv, this.painel, [5, 13])
     this.wave = new Wave(this.grid.map((_, index) => this.grid[index][0].y))
-    console.log(this.wave.gridRowsPos)
     this.addEvents()
 
     console.log("Starting Game!!!")
