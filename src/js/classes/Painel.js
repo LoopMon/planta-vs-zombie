@@ -67,15 +67,15 @@ class Painel extends Rectangle {
   init() {
     const elementos = [
       {
-        nome: "simples",
+        nome: "Simples",
         custo: 100,
       },
       {
-        nome: "duplo",
+        nome: "Duplo",
         custo: 200,
       },
       {
-        nome: "pedra",
+        nome: "Noz",
         custo: 50,
       },
     ]
