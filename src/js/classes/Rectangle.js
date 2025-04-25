@@ -1,3 +1,22 @@
+/**
+ * Classe base para representar um retângulo na tela.
+ *
+ * A classe `Rectangle` define as propriedades e comportamentos básicos de um retângulo, como posição,
+ * tamanho, cor, desenho e detecção de colisão.
+ *
+ * Propriedades:
+ * - `x` (number): posição horizontal.
+ * - `y` (number): posição vertical.
+ * - `width` (number): largura do retângulo.
+ * - `height` (number): altura do retângulo. Se não for informado, será igual à largura (formando um quadrado).
+ * - `color` (string): cor usada no preenchimento ou contorno.
+ *
+ * Métodos:
+ * - `drawRect(ctx)`: desenha o retângulo preenchido no canvas.
+ * - `drawStroke(ctx, color, lineWidth)`: desenha o contorno do retângulo.
+ * - `isCollidingWith(obj)`: verifica colisão com outro retângulo.
+ * - `move(x, y)`: move o retângulo pela tela.
+ */
 class Rectangle {
   /**
    * Cria uma instância de um retângulo.
@@ -21,7 +40,6 @@ class Rectangle {
    * Desenha o retângulo preenchido.
    *
    * @param {CanvasRenderingContext2D} ctx
-   * @returns {void}
    */
   drawRect(ctx) {
     ctx.fillStyle = this.color
@@ -34,7 +52,6 @@ class Rectangle {
    * @param {CanvasRenderingContext2D} ctx - Contexto de renderização do canvas
    * @param {string} color - cor para o contorno
    * @param {number} lineWidth - largura do contorno
-   * @returns {void}
    */
   drawStroke(ctx, color = null, lineWidth = 1) {
     ctx.strokeStyle = !!color ? color : this.color
@@ -45,15 +62,15 @@ class Rectangle {
   /**
    * Verifica se colidiu com outro retangulo.
    *
-   * @param {Rectangle} obj - retângulo
+   * @param {Rectangle} rect - retângulo
    * @returns {boolean}
    */
-  isCollidingWith(obj) {
+  isCollidingWith(rect) {
     return !(
-      this.x + this.width < obj.x ||
-      this.x > obj.x + obj.width ||
-      this.y + this.height < obj.y ||
-      this.y > obj.y + obj.height
+      this.x + this.width < rect.x ||
+      this.x > rect.x + rect.width ||
+      this.y + this.height < rect.y ||
+      this.y > rect.y + rect.height
     )
   }
 
@@ -63,7 +80,6 @@ class Rectangle {
    *
    * @param {number} x - valor para mover na horizontal
    * @param {number} y - valor para mover na vertical
-   * @returns {void}
    */
   move(x, y) {
     this.x += x
