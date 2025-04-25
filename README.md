@@ -50,7 +50,7 @@ cd planta-vs-zombie
 ### Jogo com os elementos agindo.
 
 <div align="center">
-<img align="center" width="455" height="203" src="./docs/img/layout-with-elements.png">
+<img align="center" width="455" height="203" src="./docs/img/layout-with-elements-new.png">
 </div>
 
 ---
