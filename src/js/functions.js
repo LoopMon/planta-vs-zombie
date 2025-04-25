@@ -1,16 +1,16 @@
 /// <reference path="./types.js" />
 
 /**
- * Cria o grid onde vamos plantar as plantas
+ * Cria o gramado onde vamos plantar as plantas.
  *
- * @param {Painel} painel - Painel do jogo
- * @param {number} dim - dimensões para o grid (Linha x Coluna)
- * @returns {Grid[][]} grid posicionado abaixo do painel
+ * @param {Painel} painel - painel para posicionar o gramado abaixo dele
+ * @param {HTMLCanvasElement} cnv - elemento canvas
+ * @param {number[2]} dim - linhas x colunas
+ * @param {number[2]} dimCells - largura e altura de cada célula do grid
+ * @returns {Cells[][]} grid posicionado abaixo do painel
  */
-function createGrid(cnv, painel, dim = [5, 10]) {
+function createLawn(painel, cnv, dim = [5, 10], dimCells = [70, 80]) {
   const grid = []
-  const gridWidth = 80
-  const gridHeight = 90
   let painelArea = painel.y + painel.height
   let areaForGrids = cnv.height - painelArea
   let gap = 5
@@ -23,29 +23,36 @@ function createGrid(cnv, painel, dim = [5, 10]) {
     grid.push([])
     for (let j = 0; j < dim[1]; j++) {
       if (i == 0) {
-        grid[i].push({
-          x: gridWidth * j + gap,
-          y: painelArea * (i + 1) + gap,
-          width: gridWidth - gap,
-          height: Math.min(gridHeight, Math.floor(areaForGrids / dim[0]) - gap),
-          value: "",
-        })
+        grid[i].push(
+          new Cell(
+            dimCells[0] * j + gap,
+            painelArea * (i + 1) + gap,
+            dimCells[0] - gap,
+            Math.min(dimCells[1], Math.floor(areaForGrids / dim[0]) - gap),
+            "#228b22"
+          )
+        )
       } else {
-        grid[i].push({
-          x: gridWidth * j + gap,
-          y: grid[i - 1][j].y + grid[i - 1][j].height + gap,
-          width: gridWidth - gap,
-          height: Math.min(gridHeight, Math.floor(areaForGrids / dim[0]) - gap),
-          value: "",
-        })
+        grid[i].push(
+          new Cell(
+            dimCells[0] * j + gap,
+            grid[i - 1][j].y + grid[i - 1][j].height + gap,
+            dimCells[0] - gap,
+            Math.min(dimCells[1], Math.floor(areaForGrids / dim[0]) - gap),
+            "#228b22"
+          )
+        )
       }
     }
   }
-  return grid
+
+  const lawn = new Lawn(painel, cnv, "#0a5c0a", grid)
+
+  return lawn
 }
 
 /**
- * Cria os itens do painel
+ * Cria os itens do painel.
  *
  * @param {Painel} painel - Painel do jogo
  * @param {Object[]} elementos - Elementos para o painel
