@@ -24,7 +24,7 @@ class Game {
     this.mousePos = [0, 0]
     this.currentPlant = {}
     this.painel = null
-    this.grid = null
+    this.lawn = null
     this.wave = null
     this.plants = []
     this.suns = []
@@ -42,15 +42,13 @@ class Game {
   draw = () => {
     this.painel.drawRect(this.ctx, this.mySuns)
 
-    this.grid.forEach((line) => {
-      line.forEach((field) => {
-        this.ctx.fillStyle = "#228b22"
-        this.ctx.fillRect(field.x, field.y, field.width, field.height)
-      })
-    })
+    this.lawn.drawRect(this.ctx)
 
     this.plants.forEach((plant) => {
       plant.drawRect(this.ctx)
+    })
+
+    this.plants.forEach((plant) => {
       plant.drawFire(this.ctx)
     })
 
@@ -157,16 +155,22 @@ class Game {
    * Posiciona a planta em uma posição informada, se
    * ja estiver ocupado não planta.
    *
-   * @param {number} x - x de um campo do grid
-   * @param {number} y - y de um campo do grid
+   * @param {number[2]} plantPos - posição da nova planta
+   * @param {number[2]} gridPos - grid onde vai ser colocada a planta
    * @param {Grid} grid - grid para plantar
    */
-  plant = (x, y, grid) => {
-    if (!!grid.value) return
+  plant = (plantPos, gridPos) => {
+    if (!!this.lawn.grid[gridPos[0]][gridPos[1]].content) return
 
     if (this.currentPlant && this.mySuns >= this.currentPlant.custo) {
-      this.plants.push(new Plant(x, y, 40, 60, this.currentPlant.nome))
-      grid.value = this.currentPlant.nome
+      this.plants.push(
+        new Plant(plantPos[0], plantPos[1], 40, 60, this.currentPlant.nome)
+      )
+      this.lawn.addPlant(
+        gridPos[0],
+        gridPos[1],
+        this.plants[this.plants.length - 1]
+      )
 
       this.mySuns -= this.currentPlant.custo
       this.currentPlant = {}
@@ -174,9 +178,17 @@ class Game {
     }
   }
 
-  removePlant = (x, y, grid) => {
-    if (this.mouseState == this.mouseFlags.remove) {
-      // iterar nas plantas
+  removePlant(gridPos) {
+    if (this.mouseState === this.mouseFlags.remove) {
+      // Remove do grid e obtém a planta removida
+      const removedPlant = this.lawn.removePlant(gridPos[0], gridPos[1])
+
+      if (removedPlant) {
+        // Remove do array plants
+        this.plants = this.plants.filter((plant) => plant !== removedPlant)
+        // Devolve parte do custo
+        // this.mySuns += Math.floor(removedPlant.custo * 0.5)
+      }
     }
   }
 
@@ -193,6 +205,7 @@ class Game {
    */
   addEvents = () => {
     document.addEventListener("click", (event) => {
+      // Seleciona um item do painel
       this.painel.items.forEach((item) => {
         if (
           event.clientX > item.x &&
@@ -207,7 +220,8 @@ class Game {
         }
       })
 
-      this.grid.forEach((line, i) => {
+      // Posiciona a planta no grid
+      this.lawn.grid.forEach((line, i) => {
         line.forEach((field, j) => {
           if (
             event.clientX > field.x &&
@@ -215,7 +229,7 @@ class Game {
             event.clientY > field.y &&
             event.clientY < field.y + field.height
           ) {
-            this.plant(field.x, field.y, this.grid[i][j])
+            this.plant([field.x, field.y], [i, j])
           }
         })
       })
@@ -231,7 +245,7 @@ class Game {
     })
 
     document.addEventListener("click", (event) => {
-      this.grid.forEach((line, i) => {
+      this.lawn.grid.forEach((line, i) => {
         line.forEach((field, j) => {
           if (
             event.clientX > field.x &&
@@ -239,7 +253,7 @@ class Game {
             event.clientY > field.y &&
             event.clientY < field.y + field.height
           ) {
-            this.removePlant(field.x, field.y, this.grid[i][j])
+            this.removePlant([i, j])
           }
         })
       })
@@ -275,8 +289,10 @@ class Game {
       "#bb5"
     )
     this.painel.init()
-    this.grid = createGrid(this.cnv, this.painel, [5, 13])
-    this.wave = new Wave(this.grid.map((_, index) => this.grid[index][0].y))
+    this.lawn = createLawn(this.painel, this.cnv, [5, 13], [70, 80])
+    this.wave = new Wave(
+      this.lawn.grid.map((_, index) => this.lawn.grid[index][0].y)
+    )
     this.addEvents()
 
     console.log("Starting Game!!!")

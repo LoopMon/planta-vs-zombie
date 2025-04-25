@@ -12,7 +12,7 @@ class Plant extends Rectangle {
     }
     this.color = this.types[type]
     this.life = 5
-    this.gridPos = [0, 0] // para usar quando for remover uma planta do grid
+    this.gridPos = [-1, -1]
   }
 
   /**
