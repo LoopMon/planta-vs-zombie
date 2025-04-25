@@ -1,0 +1,145 @@
+@startuml Planta vs Zombie - Diagrama
+  class Game {
+    - cnv: HTMLCanvasElement
+    - ctx: CanvasRenderingContext2D
+    - mouseFlags: Object
+    - gameFlags: Object
+    - mouseState: Integer
+    - gameState: Integer
+    - mousePos: Float[2]
+    - currentPlant: Object
+    - painel: Painel
+    - wave: Wave
+    - plants: Plant[]
+    - suns: Sun[]
+    - mySuns: Float
+    - sunTimer: Float
+    - timeToSpawnSun: Float
+    ---
+    + draw(): Void
+    + update(): Void
+    + drawMouseInfo: Void
+    + spawns: Void
+    + collectSun(sun: Sun): Void
+    + spawnSun(): Void
+    + addSun(): Void
+    + plant(plantPos: Float[2], gridPos: Integer[2])
+    + removePlant(gridPos: Integer[2]): Void
+    + clearCanvas(): Void
+    + addEvents(): Void
+    + run(): Void
+    + init(): Void
+  }
+
+  class Rectangle {
+    - x: Float
+    - y: Float
+    - width: Float
+    - height: Float
+    - color: String
+
+    + drawRect(ctx: CanvasRenderingContext2D): Void
+    + drawStroke(ctx: CanvasRenderingContext2D, color: String, lineWidth: Float): Void
+    + isCollidingWith(rect: Rectangle): Boolean
+    + move(x: Float, y: Float): Void
+  }
+
+  class Painel extends Rectangle {
+    - items: Item[]
+
+    + drawPlayerSuns(ctx: CanvasRenderingContext2D, playerSuns: Float): Void
+    + drawItems(ctx: CanvasRenderingContext2D): Void
+    + init(): Void
+  }
+
+  class Sun extends Rectangle {
+    {static} VALUE: Float
+    {static} SPEED: Float
+
+    + fall(): Void
+  }
+
+  class Zombie extends Rectangle {
+    - canMove: Boolean
+    - speed: Float
+    - life: Float
+    - damage: Float
+    - attackTimer: Float
+    - timeToAttack: Float
+    - targetPlant: Plant
+
+    + plantDetection(plant: Plant): Void
+    + attackPlant(plant: Plant): Void
+    + takeDamage(): Void
+  }
+
+  class Lawn extends Rectangle {
+    - grid: Cell[][]
+
+    + drawCells(ctx: CanvasRenderingContext2D): Void
+    + addPlant(row: Integer, col: Integer, plant: Plant): Boolean
+    + removePlant(row: Integer, col: Integer): Plant
+  }
+
+  class Cell extends Rectangle {
+    - content: Plant
+  }
+
+  class Bullet extends Rectangle {
+    - speed: Float
+  }
+
+  class Plant extends Rectangle {
+    - life: Float
+    - gridPos: Integer[2]
+    - canShoot: Boolean
+  }
+
+  class ShooterPlant extends Plant {
+    - bullets: Bullet[]
+    - fireTimer: Float
+    - timeToFire: Float
+    - damage: Float
+    - hasZombieInLine: Boolean
+
+    + drawFire(ctx: CanvasRenderingContext2D): Void
+    + fire(): Void
+    + zombieDetection(zombie: Zombie): Void
+    + updateShooting(): Void
+    + fireColision(zombie: Zombie): Boolean
+  }
+
+  class DoubleShooterPlant extends ShooterPlant {}
+
+  class Nut extends Plant {}
+
+  class Wave {
+    - zombies: Zombie[]
+    - zombiesRound: Float
+    - maxZombiePerRound: Float
+    - round: Integer
+    - spawnTimer: Float
+    - timeToSpawnZombie: Float
+    - gridRowsPos: Float[]
+
+    + drawZombies(ctx: CanvasRenderingContext2D): Void
+    + moveZombies(): Void
+    + attackPlants(plants: Plant[]): void
+    + spawnZombie(): Void
+    + checkZombiesLife(): Void
+  }
+
+  Game *-- Wave
+  Game *-- Painel
+  Game o-- Sun
+
+  Wave o-- Zombie
+
+  ShooterPlant o-- Bullet
+
+  Lawn <-- ShooterPlant
+  Lawn *-- Cell
+
+  hide empty members
+
+@enduml
