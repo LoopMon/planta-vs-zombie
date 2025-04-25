@@ -49,7 +49,7 @@ class Game {
     })
 
     this.plants.forEach((plant) => {
-      plant.drawFire(this.ctx)
+      if (plant.canShoot) plant.drawFire(this.ctx)
     })
 
     this.wave.drawZombies(this.ctx)
@@ -73,23 +73,25 @@ class Game {
       }
     })
 
+    // Primeiro detecta todos os zumbis
     this.plants.forEach((plant) => {
       this.wave.zombies.forEach((zombie) => {
-        plant.zombieDetection(zombie)
+        if (plant.canShoot) plant.zombieDetection(zombie)
       })
     })
 
+    // Depois atualiza os disparos
     this.plants.forEach((plant) => {
-      plant.bullets.forEach((bullet) => bullet.move())
-      this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
+      if (plant.canShoot) {
+        plant.updateShooting()
+        plant.fire()
+        this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
+      }
     })
 
     this.wave.attackPlants(this.plants)
-
     this.wave.moveZombies()
-
     this.wave.checkZombiesLife()
-
     this.spawns()
   }
 
@@ -126,7 +128,8 @@ class Game {
   collectSun = (sun) => {
     if (!detectMouseCollision(this.mousePos, sun)) return
 
-    this.mySuns += sun.value
+    this.mySuns += Sun.VALUE
+
     this.suns.splice(this.suns.indexOf(sun), 1)
   }
 
@@ -163,9 +166,28 @@ class Game {
     if (!!this.lawn.grid[gridPos[0]][gridPos[1]].content) return
 
     if (this.currentPlant && this.mySuns >= this.currentPlant.custo) {
-      this.plants.push(
-        new Plant(plantPos[0], plantPos[1], 40, 60, this.currentPlant.nome)
-      )
+      let newPlant
+
+      switch (this.currentPlant.nome) {
+        case "Simples":
+          newPlant = new ShooterPlant(plantPos[0], plantPos[1], 40, 60, "green")
+          break
+        case "Duplo":
+          newPlant = new DoubleShooterPlant(
+            plantPos[0],
+            plantPos[1],
+            40,
+            60,
+            "purple"
+          )
+          break
+        case "Noz":
+          newPlant = new Nut(plantPos[0], plantPos[1], 40, 60, "brown")
+          break
+        default:
+          return
+      }
+      this.plants.push(newPlant)
       this.lawn.addPlant(
         gridPos[0],
         gridPos[1],
@@ -205,13 +227,14 @@ class Game {
    */
   addEvents = () => {
     document.addEventListener("click", (event) => {
+      const mousePos = [event.clientX, event.clientY]
       // Seleciona um item do painel
       this.painel.items.forEach((item) => {
         if (
-          event.clientX > item.x &&
-          event.clientX < item.x + item.width &&
-          event.clientY > item.y &&
-          event.clientY < item.y + item.height &&
+          mousePos[0] > item.x &&
+          mousePos[0] < item.x + item.width &&
+          mousePos[1] > item.y &&
+          mousePos[1] < item.y + item.height &&
           this.mouseState == this.mouseFlags.free &&
           this.mySuns >= item.custo
         ) {
@@ -220,7 +243,7 @@ class Game {
         }
       })
 
-      // Posiciona a planta no grid
+      // Planta/Remove uma planta no grid
       this.lawn.grid.forEach((line, i) => {
         line.forEach((field, j) => {
           if (
@@ -229,7 +252,11 @@ class Game {
             event.clientY > field.y &&
             event.clientY < field.y + field.height
           ) {
-            this.plant([field.x, field.y], [i, j])
+            if (this.mouseState === this.mouseFlags.remove) {
+              this.removePlant([i, j])
+            } else {
+              this.plant([field.x, field.y], [i, j])
+            }
           }
         })
       })
@@ -242,21 +269,6 @@ class Game {
             ? this.mouseFlags.free
             : this.mouseFlags.remove
       }
-    })
-
-    document.addEventListener("click", (event) => {
-      this.lawn.grid.forEach((line, i) => {
-        line.forEach((field, j) => {
-          if (
-            event.clientX > field.x &&
-            event.clientX < field.x + field.width &&
-            event.clientY > field.y &&
-            event.clientY < field.y + field.height
-          ) {
-            this.removePlant([i, j])
-          }
-        })
-      })
     })
 
     document.addEventListener("mousemove", (event) => {

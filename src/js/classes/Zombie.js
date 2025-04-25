@@ -13,8 +13,6 @@ class Zombie extends Rectangle {
 
   /**
    * Move o zombie para a esquerda.
-   *
-   * @returns {void}
    */
   move() {
     if (!this.canMove) return
@@ -27,7 +25,6 @@ class Zombie extends Rectangle {
    * Se houver colisão chama o método `attackPlant`.
    *
    * @param {Plant} plant
-   * @returns {void}
    */
   plantDetection(plant) {
     if (!this.isCollidingWith(plant)) {
@@ -47,7 +44,6 @@ class Zombie extends Rectangle {
    * Ataca a planta tirando `1` do `plant.life` da planta.
    *
    * @param {Plant} plant
-   * @returns {void}
    */
   attackPlant(plant) {
     this.attackTimer += 1

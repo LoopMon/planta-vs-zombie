@@ -20,10 +20,10 @@ class Lawn extends Rectangle {
   addPlant(row, col, plant) {
     if (this.grid[row][col].content === null) {
       this.grid[row][col].content = plant
-      plant.gridPos = [row, col] // Atualiza a posição no grid na planta
+      plant.gridPos = [row, col]
       return true
     }
-    return false // Célula ocupada
+    return false
   }
 
   removePlant(row, col) {
@@ -32,10 +32,10 @@ class Lawn extends Rectangle {
       this.grid[row][col] &&
       this.grid[row][col].content !== null
     ) {
-      const plant = this.grid[row][col].content // Guarda referência
+      const plant = this.grid[row][col].content
       this.grid[row][col].content = null
-      return plant // Retorna a planta removida
+      return plant
     }
-    return null // Planta não encontrada
+    return null
   }
 }

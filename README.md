@@ -17,6 +17,12 @@ Este é um projeto inspirado no clássico jogo "Plants vs. Zombies". O objetivo 
 - **HTML5**: Canvas.
 - **JavaScript**: Lógica e interatividade.
 
+## Diagrama de Classe
+
+<div align="center">
+<img src="./docs/img/Planta vs Zombie - Diagrama.png">
+</div>
+
 ## Como Executar
 
 1. Clone o repositório:
