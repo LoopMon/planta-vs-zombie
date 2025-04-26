@@ -1,4 +1,6 @@
-class Lawn extends Rectangle {
+import { Rectangle } from "./Rectangle.js"
+
+export class Lawn extends Rectangle {
   constructor(painel, cnv, color, grid) {
     super(0, painel.height, cnv.width, cnv.height - painel.height, color)
     this.grid = grid

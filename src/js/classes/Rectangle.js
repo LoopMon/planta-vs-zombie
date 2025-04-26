@@ -17,7 +17,7 @@
  * - `isCollidingWith(obj)`: verifica colisão com outro retângulo.
  * - `move(x, y)`: move o retângulo pela tela.
  */
-class Rectangle {
+export class Rectangle {
   /**
    * Cria uma instância de um retângulo.
    *

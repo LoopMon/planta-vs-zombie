@@ -1,5 +1,7 @@
 /// <reference path="./types.js" />
 
+import { Game } from "./classes/Game.js"
+
 main()
 
 function main() {

@@ -1,4 +1,7 @@
-class ShooterPlant extends Plant {
+import { Plant } from "../Plant.js"
+import { Bullet } from "../Bullet.js"
+
+export class ShooterPlant extends Plant {
   bullets = []
   fireTimer = 0
   timeToFire = 100

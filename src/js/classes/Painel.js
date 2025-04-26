@@ -1,4 +1,7 @@
-class Painel extends Rectangle {
+import { Rectangle } from "./Rectangle.js"
+import { formatarNumero, createPainelItens } from "../functions.js"
+
+export class Painel extends Rectangle {
   /**
    * Cria o painel do jogo.
    *
@@ -50,9 +53,9 @@ class Painel extends Rectangle {
       ctx.fillStyle = "#000"
       ctx.lineWidth = 1
       ctx.font = `${tamanhoFonte}px Arial`
-      ctx.fillText(item.nome, item.x + tamanhoFonte, item.y + tamanhoFonte * 2)
+      ctx.fillText(item.name, item.x + tamanhoFonte, item.y + tamanhoFonte * 2)
       ctx.fillText(
-        item.custo,
+        item.cust,
         item.x + tamanhoFonte,
         item.y + tamanhoFonte * 3.5
       )
@@ -67,16 +70,20 @@ class Painel extends Rectangle {
   init() {
     const elementos = [
       {
-        nome: "Simples",
-        custo: 100,
+        name: "Sol",
+        cust: 50,
       },
       {
-        nome: "Duplo",
-        custo: 200,
+        name: "Simples",
+        cust: 100,
       },
       {
-        nome: "Noz",
-        custo: 50,
+        name: "Duplo",
+        cust: 200,
+      },
+      {
+        name: "Noz",
+        cust: 50,
       },
     ]
     this.items = createPainelItens(this, elementos)

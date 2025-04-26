@@ -1,4 +1,6 @@
-class Zombie extends Rectangle {
+import { Rectangle } from "./Rectangle.js"
+
+export class Zombie extends Rectangle {
   constructor(x, y, width, height, type) {
     super(x, y, width, height, "red")
     this.type = type

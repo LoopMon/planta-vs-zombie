@@ -1,5 +1,8 @@
 /// <reference path="./types.js" />
 
+import { Cell } from "./classes/Cell.js"
+import { Lawn } from "./classes/Lawn.js"
+
 /**
  * Cria o gramado onde vamos plantar as plantas.
  *
@@ -7,9 +10,9 @@
  * @param {HTMLCanvasElement} cnv - elemento canvas
  * @param {number[2]} dim - linhas x colunas
  * @param {number[2]} dimCells - largura e altura de cada célula do grid
- * @returns {Cells[][]} grid posicionado abaixo do painel
+ * @returns {Cell[][]} grid posicionado abaixo do painel
  */
-function createLawn(painel, cnv, dim = [5, 10], dimCells = [70, 80]) {
+export function createLawn(painel, cnv, dim = [5, 10], dimCells = [70, 80]) {
   const grid = []
   let painelArea = painel.y + painel.height
   let areaForGrids = cnv.height - painelArea
@@ -58,7 +61,7 @@ function createLawn(painel, cnv, dim = [5, 10], dimCells = [70, 80]) {
  * @param {Object[]} elementos - Elementos para o painel
  * @returns {Item[]} retorna uma coleção de itens
  */
-function createPainelItens(painel, elements) {
+export function createPainelItens(painel, elements) {
   const items = []
 
   let gap = 10
@@ -72,8 +75,8 @@ function createPainelItens(painel, elements) {
         y: posY,
         width: 80,
         height: painel.height - posY * 2,
-        custo: elements[i - 1].custo,
-        nome: elements[i - 1].nome,
+        cust: elements[i - 1].cust,
+        name: elements[i - 1].name,
       })
     } else {
       items.push({
@@ -81,8 +84,8 @@ function createPainelItens(painel, elements) {
         y: posY,
         width: 80,
         height: painel.height - posY * 2,
-        custo: elements[i - 1].custo,
-        nome: elements[i - 1].nome,
+        cust: elements[i - 1].cust,
+        name: elements[i - 1].name,
       })
     }
   }
@@ -98,7 +101,7 @@ function createPainelItens(painel, elements) {
  * @param {Object} obj - objeto do plano
  * @returns {boolean}
  */
-function detectMouseCollision(mouse, obj) {
+export function detectMouseCollision(mouse, obj) {
   return (
     mouse[0] >= obj.x &&
     mouse[0] <= obj.x + obj.width &&
@@ -122,7 +125,7 @@ function detectMouseCollision(mouse, obj) {
  * @param {number} n - Número completo
  * @returns {string}
  */
-function formatarNumero(n) {
+export function formatarNumero(n) {
   const casas = {
     k: [3, 4, 5],
     M: [6, 7, 8],
@@ -134,6 +137,7 @@ function formatarNumero(n) {
     n = "" + n
 
     let cd = n.slice(1, n.length).length
+    let aux
 
     for (let key in casas) {
       if (casas[key].includes(cd)) {

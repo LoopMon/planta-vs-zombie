@@ -1,3 +1,5 @@
+import { Rectangle } from "./Rectangle.js"
+
 /**
  * Representa o Sol que cai lentamente na tela.
  *
@@ -8,7 +10,7 @@
  * Métodos:
  * - `fall()`: incrementa a posição vertical (`y`) simulando a queda do Sol.
  */
-class Sun extends Rectangle {
+export class Sun extends Rectangle {
   static VALUE = 25
   static SPEED = 0.5
   constructor(x, y, width = 30, height = 30, color = "#ff0") {

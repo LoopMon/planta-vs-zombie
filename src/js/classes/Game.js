@@ -1,4 +1,12 @@
-class Game {
+import { Painel } from "./Painel.js"
+import { Wave } from "./Wave.js"
+import { Sun } from "./Sun.js"
+import { Nut } from "./Plants/Nut.js"
+import { ShooterPlant } from "./Plants/ShooterPlant.js"
+import { DoubleShooterPlant } from "./Plants/DoubleShooterPlant.js"
+import { detectMouseCollision, createLawn } from "../functions.js"
+
+export class Game {
   /**
    * Cria o jogo com todos os elementos necessários.
    *
@@ -165,10 +173,10 @@ class Game {
   plant = (plantPos, gridPos) => {
     if (!!this.lawn.grid[gridPos[0]][gridPos[1]].content) return
 
-    if (this.currentPlant && this.mySuns >= this.currentPlant.custo) {
+    if (this.currentPlant && this.mySuns >= this.currentPlant.cust) {
       let newPlant
 
-      switch (this.currentPlant.nome) {
+      switch (this.currentPlant.name) {
         case "Simples":
           newPlant = new ShooterPlant(plantPos[0], plantPos[1], 40, 60, "green")
           break
@@ -194,7 +202,7 @@ class Game {
         this.plants[this.plants.length - 1]
       )
 
-      this.mySuns -= this.currentPlant.custo
+      this.mySuns -= this.currentPlant.cust
       this.currentPlant = {}
       this.mouseState = this.mouseFlags.free
     }
@@ -236,7 +244,7 @@ class Game {
           mousePos[1] > item.y &&
           mousePos[1] < item.y + item.height &&
           this.mouseState == this.mouseFlags.free &&
-          this.mySuns >= item.custo
+          this.mySuns >= item.cust
         ) {
           this.mouseState = this.mouseFlags.plant
           this.currentPlant = item
@@ -247,10 +255,10 @@ class Game {
       this.lawn.grid.forEach((line, i) => {
         line.forEach((field, j) => {
           if (
-            event.clientX > field.x &&
-            event.clientX < field.x + field.width &&
-            event.clientY > field.y &&
-            event.clientY < field.y + field.height
+            mousePos[0] > field.x &&
+            mousePos[0] < field.x + field.width &&
+            mousePos[1] > field.y &&
+            mousePos[1] < field.y + field.height
           ) {
             if (this.mouseState === this.mouseFlags.remove) {
               this.removePlant([i, j])

@@ -1,4 +1,6 @@
-class Wave {
+import { Zombie } from "./Zombie.js"
+
+export class Wave {
   zombies = []
   zombiesRound = 0
   maxZombiesPerRound = 2

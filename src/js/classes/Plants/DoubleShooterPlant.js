@@ -1,4 +1,7 @@
-class DoubleShooterPlant extends ShooterPlant {
+import { ShooterPlant } from "./ShooterPlant.js"
+import { Bullet } from "../Bullet.js"
+
+export class DoubleShooterPlant extends ShooterPlant {
   updateShooting() {
     if (this.hasZombieInLine) {
       this.fireTimer += 1
