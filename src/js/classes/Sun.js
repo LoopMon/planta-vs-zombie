@@ -1,9 +1,12 @@
 import { Rectangle } from "./Rectangle.js"
+import { SUN, COLORS } from "../constants.js"
 
 /**
  * Representa o Sol que cai lentamente na tela.
  *
  * A classe `Sun` estende `Rectangle` e define um objeto com posição, tamanho, cor e comportamento de queda.
+ *
+ * Propriedades:
  * - `VALUE`: energia para comprar plantas
  * - `SPEED`: velocidade de queda
  *
@@ -11,10 +14,23 @@ import { Rectangle } from "./Rectangle.js"
  * - `fall()`: incrementa a posição vertical (`y`) simulando a queda do Sol.
  */
 export class Sun extends Rectangle {
-  static VALUE = 25
-  static SPEED = 0.5
-  constructor(x, y, width = 30, height = 30, color = "#ff0") {
-    super(x - width < 0 ? 0 : x - width, y - height, width, height, color)
+  value = SUN.VALUE
+  speed = SUN.SPEED
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   * @param {boolean} canFall
+   */
+  constructor(x, y, canFall) {
+    super(
+      x - SUN.SCALE < 0 ? 0 : x - SUN.SCALE,
+      y - SUN.SCALE,
+      SUN.SCALE,
+      SUN.SCALE,
+      COLORS.RGB_YELLOW
+    )
+    this.canFall = canFall
   }
 
   /**
@@ -23,6 +39,7 @@ export class Sun extends Rectangle {
    * Faz o incremento na posição `y` pela velocidade.
    */
   fall() {
-    this.y += Sun.SPEED
+    if (!this.canFall) return
+    this.y += this.speed
   }
 }
