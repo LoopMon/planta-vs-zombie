@@ -2,9 +2,12 @@ import { Painel } from "./Painel.js"
 import { Wave } from "./Wave.js"
 import { Sun } from "./Sun.js"
 import { Nut } from "./Plants/Nut.js"
+import { SunFlower } from "./Plants/SunFlower.js"
 import { ShooterPlant } from "./Plants/ShooterPlant.js"
 import { DoubleShooterPlant } from "./Plants/DoubleShooterPlant.js"
 import { detectMouseCollision, createLawn } from "../functions.js"
+
+import { PLANT, COLORS, CONTROLS, FONT } from "../constants.js"
 
 export class Game {
   /**
@@ -48,9 +51,9 @@ export class Game {
    * Responsável por desenhar os elementos do jogo.
    */
   draw = () => {
-    this.painel.drawRect(this.ctx, this.mySuns)
-
     this.lawn.drawRect(this.ctx)
+
+    this.painel.drawRect(this.ctx, this.mySuns)
 
     this.plants.forEach((plant) => {
       plant.drawRect(this.ctx)
@@ -81,17 +84,15 @@ export class Game {
       }
     })
 
-    // Primeiro detecta todos os zumbis
     this.plants.forEach((plant) => {
       this.wave.zombies.forEach((zombie) => {
         if (plant.canShoot) plant.zombieDetection(zombie)
       })
     })
 
-    // Depois atualiza os disparos
     this.plants.forEach((plant) => {
+      plant.update()
       if (plant.canShoot) {
-        plant.updateShooting()
         plant.fire()
         this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
       }
@@ -113,8 +114,9 @@ export class Game {
    * - Para remover planta;
    */
   drawMouseInfo = () => {
-    this.ctx.fillStyle = "#0f0"
-    this.ctx.font = "16px Arial"
+    this.ctx.fillStyle = COLORS.RGB_GREEN
+    let fontConfig = `${FONT.MEDIUM}px ${FONT.FAMILY}`
+    this.ctx.font = fontConfig
     this.ctx.fillText(this.mouseState, this.mousePos[0], this.mousePos[1])
   }
 
@@ -124,6 +126,11 @@ export class Game {
    */
   spawns = () => {
     this.spawnSun()
+    this.plants.forEach((plant) => {
+      if (plant.isSunFlower) {
+        plant.createSun(this.suns)
+      }
+    })
     this.wave.spawnZombie()
   }
 
@@ -136,7 +143,7 @@ export class Game {
   collectSun = (sun) => {
     if (!detectMouseCollision(this.mousePos, sun)) return
 
-    this.mySuns += Sun.VALUE
+    this.mySuns += sun.value
 
     this.suns.splice(this.suns.indexOf(sun), 1)
   }
@@ -159,7 +166,7 @@ export class Game {
   addSun = () => {
     const x = Math.floor(Math.random() * this.cnv.width)
     const y = Math.floor(Math.random())
-    this.suns.push(new Sun(x, y))
+    this.suns.push(new Sun(x, y, true))
   }
 
   /**
@@ -177,20 +184,41 @@ export class Game {
       let newPlant
 
       switch (this.currentPlant.name) {
+        case "Sol":
+          newPlant = new SunFlower(
+            plantPos[0],
+            plantPos[1],
+            PLANT.WIDTH,
+            PLANT.HEIGHT,
+            COLORS.CHOCOLATE
+          )
+          break
         case "Simples":
-          newPlant = new ShooterPlant(plantPos[0], plantPos[1], 40, 60, "green")
+          newPlant = new ShooterPlant(
+            plantPos[0],
+            plantPos[1],
+            PLANT.WIDTH,
+            PLANT.HEIGHT,
+            COLORS.GREEN
+          )
           break
         case "Duplo":
           newPlant = new DoubleShooterPlant(
             plantPos[0],
             plantPos[1],
-            40,
-            60,
-            "purple"
+            PLANT.WIDTH,
+            PLANT.HEIGHT,
+            COLORS.PURPLE
           )
           break
         case "Noz":
-          newPlant = new Nut(plantPos[0], plantPos[1], 40, 60, "brown")
+          newPlant = new Nut(
+            plantPos[0],
+            plantPos[1],
+            PLANT.WIDTH,
+            PLANT.HEIGHT,
+            COLORS.BROWN
+          )
           break
         default:
           return
@@ -271,7 +299,7 @@ export class Game {
     })
 
     document.addEventListener("keyup", (event) => {
-      if (event.key.toLowerCase() === "r") {
+      if (event.key.toLowerCase() === CONTROLS.R) {
         this.mouseState =
           this.mouseState === this.mouseFlags.remove
             ? this.mouseFlags.free
@@ -301,15 +329,33 @@ export class Game {
    * itens principais para jogar.
    */
   init = () => {
+    const items = [
+      {
+        name: "Sol",
+        cust: 50,
+      },
+      {
+        name: "Simples",
+        cust: 100,
+      },
+      {
+        name: "Duplo",
+        cust: 200,
+      },
+      {
+        name: "Noz",
+        cust: 50,
+      },
+    ]
     this.painel = new Painel(
       0,
       0,
       this.cnv.width,
       Math.floor(this.cnv.height / 5),
-      "#bb5"
+      COLORS.GREEN_YELLOW,
+      items
     )
-    this.painel.init()
-    this.lawn = createLawn(this.painel, this.cnv, [5, 13], [70, 80])
+    this.lawn = createLawn(this.painel, this.cnv, [5, 13])
     this.wave = new Wave(
       this.lawn.grid.map((_, index) => this.lawn.grid[index][0].y)
     )
