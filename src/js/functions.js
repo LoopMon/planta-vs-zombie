@@ -2,21 +2,22 @@
 
 import { Cell } from "./classes/Cell.js"
 import { Lawn } from "./classes/Lawn.js"
+import { MenuItem } from "./classes/MenuItem.js"
+import { GAME, COLORS, LAWN, PAINEL } from "./constants.js"
 
 /**
  * Cria o gramado onde vamos plantar as plantas.
  *
  * @param {Painel} painel - painel para posicionar o gramado abaixo dele
- * @param {HTMLCanvasElement} cnv - elemento canvas
+ * @param {HTMLCanvasElement} cnv - elemento canvas para cálculo da proporção das células
  * @param {number[2]} dim - linhas x colunas
- * @param {number[2]} dimCells - largura e altura de cada célula do grid
  * @returns {Cell[][]} grid posicionado abaixo do painel
  */
-export function createLawn(painel, cnv, dim = [5, 10], dimCells = [70, 80]) {
+export function createLawn(painel, cnv, dim = [5, 10]) {
   const grid = []
-  let painelArea = painel.y + painel.height
+  let painelArea = painel.getBottom()
   let areaForGrids = cnv.height - painelArea
-  let gap = 5
+  let gap = LAWN.CELL_GAP
 
   if (dim[0] > 5) {
     dim[0] = 5
@@ -28,76 +29,67 @@ export function createLawn(painel, cnv, dim = [5, 10], dimCells = [70, 80]) {
       if (i == 0) {
         grid[i].push(
           new Cell(
-            dimCells[0] * j + gap,
-            painelArea * (i + 1) + gap,
-            dimCells[0] - gap,
-            Math.min(dimCells[1], Math.floor(areaForGrids / dim[0]) - gap),
-            "#228b22"
+            LAWN.CELL_WIDTH * j + gap,
+            painelArea * (i + 1) + GAME.PAINEL_LAWN_GAP,
+            LAWN.CELL_WIDTH - gap,
+            Math.min(LAWN.CELL_HEIGHT, Math.floor(areaForGrids / dim[0]) - gap),
+            COLORS.RGB_FOREST_GREEN
           )
         )
       } else {
         grid[i].push(
           new Cell(
-            dimCells[0] * j + gap,
+            LAWN.CELL_WIDTH * j + gap,
             grid[i - 1][j].y + grid[i - 1][j].height + gap,
-            dimCells[0] - gap,
-            Math.min(dimCells[1], Math.floor(areaForGrids / dim[0]) - gap),
-            "#228b22"
+            LAWN.CELL_WIDTH - gap,
+            Math.min(LAWN.CELL_HEIGHT, Math.floor(areaForGrids / dim[0]) - gap),
+            COLORS.RGB_FOREST_GREEN
           )
         )
       }
     }
   }
 
-  const lawn = new Lawn(painel, cnv, "#0a5c0a", grid)
+  const lawn = new Lawn(painel, cnv, COLORS.RGB_DARK_GREEN, grid)
 
   return lawn
 }
 
 /**
- * Cria os itens do painel.
+ * Cria os itens do painel com as posições de acordo com o painel.
  *
  * @param {Painel} painel - Painel do jogo
- * @param {Object[]} elementos - Elementos para o painel
+ * @param {Object[]} items - Elementos para o painel
  * @returns {Item[]} retorna uma coleção de itens
  */
-export function createPainelItens(painel, elements) {
-  const items = []
+export function createPainelItems(painel, items) {
+  const menuItems = []
 
-  let gap = 10
-  let posX = painel.areaPlayerSuns.x + painel.areaPlayerSuns.width + gap
-  let posY = 10
+  let gapX = PAINEL.ITEM_GAP
+  let gapY = PAINEL.ITEM_GAP
 
-  for (let i = 1; i <= elements.length; i++) {
-    if (i == 1) {
-      items.push({
-        x: posX,
-        y: posY,
-        width: 80,
-        height: painel.height - posY * 2,
-        cust: elements[i - 1].cust,
-        name: elements[i - 1].name,
-      })
-    } else {
-      items.push({
-        x: items[i - 2].x + items[i - 2].width + gap,
-        y: posY,
-        width: 80,
-        height: painel.height - posY * 2,
-        cust: elements[i - 1].cust,
-        name: elements[i - 1].name,
-      })
-    }
+  for (let i = 0, len = items.length; i < len; i++) {
+    if (i !== 0) gapX *= i + 1
+    const menuItem = new MenuItem(
+      PAINEL.ITEM_SCALE * i + gapX,
+      gapY,
+      PAINEL.ITEM_SCALE,
+      painel.height - gapY * 2,
+      items[i].name,
+      items[i].cust
+    )
+    menuItems.push(menuItem)
+    gapX = PAINEL.ITEM_GAP
   }
 
-  return items
+  return menuItems
 }
 
 /**
  * Permite identificar se o mouse passou
  * por cima de um objeto.
  *
- * @param {number[]} mouse - posições do mouse no plano
+ * @param {number[2]} mouse - posições do mouse no plano
  * @param {Object} obj - objeto do plano
  * @returns {boolean}
  */
@@ -108,48 +100,4 @@ export function detectMouseCollision(mouse, obj) {
     mouse[1] >= obj.y &&
     mouse[1] <= obj.y + obj.height
   )
-}
-
-/**
- * Função responsável por transformar números grandes
- * em strings dos números abreviados.
- *
- * Por exemplo:
- *
- * - 1000 -> 1k
- *
- * - 10000 -> 10k
- *
- * - 4000000 -> 4M
- *
- * @param {number} n - Número completo
- * @returns {string}
- */
-export function formatarNumero(n) {
-  const casas = {
-    k: [3, 4, 5],
-    M: [6, 7, 8],
-    B: [9, 10, 11],
-    T: [12, 13, 14],
-  }
-
-  if (n >= 1000) {
-    n = "" + n
-
-    let cd = n.slice(1, n.length).length
-    let aux
-
-    for (let key in casas) {
-      if (casas[key].includes(cd)) {
-        aux = +("1e" + casas[key][0])
-        n = +n
-        n = (n / aux).toFixed(2)
-        n = n + key
-        break
-      }
-    }
-    return n
-  }
-
-  return n
 }
