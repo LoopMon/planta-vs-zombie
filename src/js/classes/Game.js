@@ -10,6 +10,28 @@ import { detectMouseCollision, createLawn } from "../functions.js"
 import { PLANT, COLORS, CONTROLS, FONT } from "../constants.js"
 
 export class Game {
+  mouseFlags = {
+    free: 0,
+    plant: 1,
+    remove: 2,
+  }
+  gameFlags = {
+    play: 0,
+    pause: 1,
+    menu: 2,
+  }
+  mouseState = this.mouseFlags.free
+  gameState = this.gameFlags.play
+  mousePos = [0, 0]
+  currentPlant = {}
+  painel = null
+  lawn = null
+  wave = null
+  plants = []
+  suns = []
+  mySuns = 5_000 // para desenvolvimento
+  sunTimer = 0
+  timeToSpawnSun = 1250
   /**
    * Cria o jogo com todos os elementos necessários.
    *
@@ -20,28 +42,6 @@ export class Game {
   constructor(cnv, ctx) {
     this.cnv = cnv
     this.ctx = ctx
-    this.mouseFlags = {
-      free: 0,
-      plant: 1,
-      remove: 2,
-    }
-    this.gameFlags = {
-      play: 0,
-      pause: 1,
-      menu: 2,
-    }
-    this.mouseState = this.mouseFlags.free
-    this.gameState = this.gameFlags.play
-    this.mousePos = [0, 0]
-    this.currentPlant = {}
-    this.painel = null
-    this.lawn = null
-    this.wave = null
-    this.plants = []
-    this.suns = []
-    this.mySuns = 1_000_000 // para desenvolvimento
-    this.sunTimer = 0
-    this.timeToSpawnSun = 1250
     // Definindo largura e altura do canvas para dimensões da tela
     this.cnv.width = window.innerWidth
     this.cnv.height = window.innerHeight
