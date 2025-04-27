@@ -1,4 +1,5 @@
 import { Zombie } from "./Zombie.js"
+import { COLORS, ZOMBIE } from "../constants.js"
 
 export class Wave {
   zombies = []
@@ -15,7 +16,7 @@ export class Wave {
   drawZombies(ctx) {
     this.zombies.forEach((zombie) => {
       zombie.drawRect(ctx)
-      zombie.drawStroke(ctx, "#000")
+      zombie.drawStroke(ctx, COLORS.RGB_BLACK)
     })
   }
 
@@ -62,8 +63,8 @@ export class Wave {
         new Zombie(
           window.innerWidth,
           this.gridRowsPos[Math.floor(Math.random() * this.gridRowsPos.length)],
-          50,
-          70
+          ZOMBIE.WIDTH,
+          ZOMBIE.HEIGHT
         )
       )
       this.zombiesRound += 1

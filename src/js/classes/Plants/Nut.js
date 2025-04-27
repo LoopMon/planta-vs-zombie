@@ -1,5 +1,6 @@
 import { Plant } from "../Plant.js"
+import { PLANT } from "../../constants.js"
 
 export class Nut extends Plant {
-  life = 20
+  life = PLANT.LIFE * 3
 }

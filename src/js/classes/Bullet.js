@@ -1,9 +1,10 @@
 import { Rectangle } from "./Rectangle.js"
+import { BULLET, COLORS } from "../constants.js"
 
 export class Bullet extends Rectangle {
-  speed = 2
-  constructor(x, y, color = "#00f") {
-    super(x, y, 10, 10, color)
+  speed = BULLET.SPEED
+  constructor(x, y) {
+    super(x, y, BULLET.SCALE, BULLET.SCALE, COLORS.RGB_BLUE)
   }
 
   /**
