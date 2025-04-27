@@ -16,6 +16,8 @@
  * - `drawStroke(ctx, color, lineWidth)`: desenha o contorno do retângulo.
  * - `isCollidingWith(obj)`: verifica colisão com outro retângulo.
  * - `move(x, y)`: move o retângulo pela tela.
+ * - `getRight()`: borda direita do retângulo (x + width).
+ * - `getBottom()`: borda inferior do retângulo (y + height).
  */
 export class Rectangle {
   /**
@@ -84,5 +86,21 @@ export class Rectangle {
   move(x, y) {
     this.x += x
     this.y += y
+  }
+
+  /**
+   * Retorna a coordenada X da borda direita do retângulo (x + width).
+   * @returns {number}
+   */
+  getRight() {
+    return this.x + this.width
+  }
+
+  /**
+   * Retorna a coordenada Y da borda inferior do retângulo (y + height).
+   * @returns {number}
+   */
+  getBottom() {
+    return this.y + this.height
   }
 }
