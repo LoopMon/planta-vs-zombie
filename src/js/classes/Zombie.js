@@ -1,13 +1,14 @@
 import { Rectangle } from "./Rectangle.js"
+import { ZOMBIE } from "../constants.js"
 
 export class Zombie extends Rectangle {
   constructor(x, y, width, height, type) {
     super(x, y, width, height, "red")
     this.type = type
     this.canMove = true
-    this.speed = 0.5 // 0.05
-    this.life = 10
-    this.damage = 1
+    this.speed = ZOMBIE.SPEED
+    this.life = ZOMBIE.LIFE
+    this.damage = ZOMBIE.DAMAGE
     this.attackTimer = 0
     this.timeToAttack = 100
     this.targetPlant = null
@@ -63,7 +64,7 @@ export class Zombie extends Rectangle {
   /**
    * Tira 1 de vida do zombie.
    */
-  takeDamage() {
-    this.life -= 1
+  takeDamage(plantDamage) {
+    this.life -= plantDamage
   }
 }
