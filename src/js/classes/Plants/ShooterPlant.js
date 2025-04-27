@@ -1,11 +1,12 @@
 import { Plant } from "../Plant.js"
 import { Bullet } from "../Bullet.js"
+import { PLANT } from "../../constants.js"
 
 export class ShooterPlant extends Plant {
   bullets = []
   fireTimer = 0
   timeToFire = 100
-  damage = 1
+  damage = PLANT.DAMAGE
   hasZombieInLine = false
   canShoot = true
 
@@ -18,6 +19,20 @@ export class ShooterPlant extends Plant {
     this.bullets.forEach((bullet) => {
       bullet.drawRect(ctx)
     })
+  }
+
+  update() {
+    if (this.hasZombieInLine) {
+      this.fireTimer += 1
+
+      if (this.fireTimer >= this.timeToFire) {
+        this.bullets.push(
+          new Bullet(this.x + this.width, this.y + this.height / 4)
+        )
+        this.fireTimer = 0
+      }
+    }
+    this.hasZombieInLine = false
   }
 
   /**
@@ -36,23 +51,9 @@ export class ShooterPlant extends Plant {
    * @param {Zombie} zombie
    */
   zombieDetection(zombie) {
-    if (this.y == zombie.y) {
-      this.hasZombieInLine = true // Marca que há zumbis na linha
+    if (this.y == zombie.y && this.x <= zombie.x) {
+      this.hasZombieInLine = true
     }
-  }
-
-  updateShooting() {
-    if (this.hasZombieInLine) {
-      this.fireTimer += 1
-
-      if (this.fireTimer >= this.timeToFire) {
-        this.bullets.push(
-          new Bullet(this.x + this.width, this.y + this.height / 4)
-        )
-        this.fireTimer = 0
-      }
-    }
-    this.hasZombieInLine = false // Reseta para o próximo frame
   }
 
   /**
@@ -66,7 +67,7 @@ export class ShooterPlant extends Plant {
     this.bullets = this.bullets.filter((bullet) => {
       const hitZombie = bullet.isCollidingWith(zombie)
       if (hitZombie) {
-        zombie.takeDamage()
+        zombie.takeDamage(this.damage)
         return false
       }
       return bullet.x <= window.innerWidth
