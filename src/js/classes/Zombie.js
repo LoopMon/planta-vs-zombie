@@ -2,16 +2,26 @@ import { Rectangle } from "./Rectangle.js"
 import { ZOMBIE } from "../constants.js"
 
 export class Zombie extends Rectangle {
-  constructor(x, y, width, height, type) {
+  canMove = true
+  canAttack = false
+  speed = ZOMBIE.SPEED
+  life = ZOMBIE.LIFE
+  damage = ZOMBIE.DAMAGE
+  targetPlant = null
+  currentTime = 0
+  timeToAttack = ZOMBIE.TIME_TO_ATTACK
+
+  constructor(x, y, width, height) {
     super(x, y, width, height, "red")
-    this.type = type
-    this.canMove = true
-    this.speed = ZOMBIE.SPEED
-    this.life = ZOMBIE.LIFE
-    this.damage = ZOMBIE.DAMAGE
-    this.attackTimer = 0
-    this.timeToAttack = 100
-    this.targetPlant = null
+  }
+
+  update(timestamp) {
+    if (this.targetPlant !== null) {
+      if (timestamp - this.currentTime > this.timeToAttack) {
+        this.currentTime = timestamp
+        this.canAttack = true
+      }
+    }
   }
 
   /**
@@ -49,16 +59,15 @@ export class Zombie extends Rectangle {
    * @param {Plant} plant
    */
   attackPlant(plant) {
-    this.attackTimer += 1
-    if (this.attackTimer >= this.timeToAttack) {
-      this.attackTimer = 0
-      plant.life -= this.damage
-      if (plant.life <= 0 || !this.isCollidingWith(plant)) {
-        this.canMove = true
-        this.targetPlant = null
-      }
-      console.log("atacou")
+    if (!this.canAttack) return
+
+    plant.life -= this.damage
+    if (plant.life <= 0 || !this.isCollidingWith(plant)) {
+      this.canMove = true
+      this.targetPlant = null
     }
+    console.log("atacou")
+    this.canAttack = false
   }
 
   /**
