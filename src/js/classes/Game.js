@@ -126,7 +126,7 @@ export class Game {
     this.sunManager.spawnSun(this)
     this.plants.forEach((plant) => {
       if (plant.isSunFlower) {
-        plant.createSun(this.suns)
+        plant.createSun(this.sunManager)
       }
     })
     this.wave.spawnZombie()
@@ -191,6 +191,10 @@ export class Game {
         gridPos[1],
         this.plants[this.plants.length - 1]
       )
+
+      if (newPlant.isSunFlower) {
+        newPlant.initSunCycle()
+      }
 
       this.mySuns -= this.currentPlant.cust
       this.currentPlant = {}
