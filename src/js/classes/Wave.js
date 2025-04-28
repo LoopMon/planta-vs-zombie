@@ -13,6 +13,10 @@ export class Wave {
     this.gridRowsPos = gridRowsPos
   }
 
+  update(timestamp) {
+    this.zombies.forEach((zombie) => zombie.update(timestamp))
+  }
+
   drawZombies(ctx) {
     this.zombies.forEach((zombie) => {
       zombie.drawRect(ctx)
