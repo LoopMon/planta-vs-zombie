@@ -38,6 +38,7 @@ export const ZOMBIE = {
   WIDTH: 50,
   HEIGHT: 70,
   TIME_TO_ATTACK: 1_000, // ms
+  TIME_TO_SPAWN: 10_000, // ms
 }
 
 export const BULLET = {
