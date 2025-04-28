@@ -4,11 +4,11 @@ import { PLANT } from "../../constants.js"
 
 export class ShooterPlant extends Plant {
   bullets = []
-  fireTimer = 0
-  timeToFire = 100
   damage = PLANT.DAMAGE
   hasZombieInLine = false
   canShoot = true
+  currentTime = 0
+  timeToFire = PLANT.TIME_TO_FIRE
 
   /**
    * Desenha os disparos da planta.
@@ -21,15 +21,13 @@ export class ShooterPlant extends Plant {
     })
   }
 
-  update() {
+  update(timestamp) {
     if (this.hasZombieInLine) {
-      this.fireTimer += 1
-
-      if (this.fireTimer >= this.timeToFire) {
+      if (timestamp - this.currentTime > this.timeToFire) {
+        this.currentTime = timestamp
         this.bullets.push(
           new Bullet(this.x + this.width, this.y + this.height / 4)
         )
-        this.fireTimer = 0
       }
     }
     this.hasZombieInLine = false
