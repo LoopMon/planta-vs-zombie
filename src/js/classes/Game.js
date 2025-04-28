@@ -84,8 +84,10 @@ export class Game {
       })
     })
 
+    this.wave.update(timestamp)
+
     this.plants.forEach((plant) => {
-      plant.update()
+      plant.update(timestamp)
       if (plant.canShoot) {
         plant.fire()
         this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
