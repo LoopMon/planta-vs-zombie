@@ -45,6 +45,7 @@ export const SUN = {
   VALUE: 25,
   SPEED: 0.5,
   SCALE: 30,
+  TIME_TO_SPAWN: 10000, // ms
 }
 
 export const COLORS = {
@@ -66,4 +67,5 @@ export const COLORS = {
 export const CONTROLS = {
   R: "r",
   P: "p",
+  ESC: "escape",
 }
