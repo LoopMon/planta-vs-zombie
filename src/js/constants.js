@@ -26,6 +26,7 @@ export const PLANT = {
   LIFE: 100,
   WIDTH: 40,
   HEIGHT: 60,
+  TIME_TO_FIRE: 2000, // ms
 }
 
 export const ZOMBIE = {
@@ -34,6 +35,7 @@ export const ZOMBIE = {
   SPEED: 0.5,
   WIDTH: 50,
   HEIGHT: 70,
+  TIME_TO_ATTACK: 1000, // ms
 }
 
 export const BULLET = {
