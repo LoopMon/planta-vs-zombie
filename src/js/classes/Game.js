@@ -1,15 +1,36 @@
 import { Painel } from "./Painel.js"
 import { Wave } from "./Wave.js"
-import { Sun } from "./Sun.js"
+import { SunManager } from "./SunManager.js"
 import { Nut } from "./Plants/Nut.js"
 import { SunFlower } from "./Plants/SunFlower.js"
 import { ShooterPlant } from "./Plants/ShooterPlant.js"
 import { DoubleShooterPlant } from "./Plants/DoubleShooterPlant.js"
-import { detectMouseCollision, createLawn } from "../functions.js"
+import { createLawn } from "../functions.js"
 
 import { PLANT, COLORS, CONTROLS, FONT } from "../constants.js"
 
 export class Game {
+  mouseFlags = {
+    free: 0,
+    plant: 1,
+    remove: 2,
+  }
+  gameFlags = {
+    play: 0,
+    pause: 1,
+    menu: 2,
+  }
+  mouseState = this.mouseFlags.free
+  gameState = this.gameFlags.play
+  mousePos = [0, 0]
+  currentPlant = {}
+  painel = null
+  lawn = null
+  wave = null
+  plants = []
+  sunManager = new SunManager()
+  mySuns = 5_000 // para desenvolvimento
+
   /**
    * Cria o jogo com todos os elementos necessários.
    *
@@ -20,28 +41,6 @@ export class Game {
   constructor(cnv, ctx) {
     this.cnv = cnv
     this.ctx = ctx
-    this.mouseFlags = {
-      free: 0,
-      plant: 1,
-      remove: 2,
-    }
-    this.gameFlags = {
-      play: 0,
-      pause: 1,
-      menu: 2,
-    }
-    this.mouseState = this.mouseFlags.free
-    this.gameState = this.gameFlags.play
-    this.mousePos = [0, 0]
-    this.currentPlant = {}
-    this.painel = null
-    this.lawn = null
-    this.wave = null
-    this.plants = []
-    this.suns = []
-    this.mySuns = 1_000_000 // para desenvolvimento
-    this.sunTimer = 0
-    this.timeToSpawnSun = 1250
     // Definindo largura e altura do canvas para dimensões da tela
     this.cnv.width = window.innerWidth
     this.cnv.height = window.innerHeight
@@ -65,24 +64,19 @@ export class Game {
 
     this.wave.drawZombies(this.ctx)
 
-    this.suns.forEach((sun) => sun.drawRect(this.ctx))
+    this.sunManager.draw(this.ctx)
 
     this.drawMouseInfo()
   }
 
   /**
-   * Responsável por verificar a atualização
-   * dos elementos do jogo.
+   * Responsável por verificar a atualização dos elementos do jogo.
+   *
+   * @param {DOMHighResTimeStamp} timestamp - O timestamp em milissegundos,
+   *    fornecido pelo `requestAnimationFrame`, usado para sincronização de animações.
    */
-  update = () => {
-    this.suns.forEach((sun, index) => {
-      sun.fall()
-      this.collectSun(sun)
-
-      if (sun.y > this.cnv.height) {
-        this.suns.splice(index, 1)
-      }
-    })
+  update = (timestamp) => {
+    this.sunManager.update(timestamp)
 
     this.plants.forEach((plant) => {
       this.wave.zombies.forEach((zombie) => {
@@ -90,8 +84,10 @@ export class Game {
       })
     })
 
+    this.wave.update(timestamp)
+
     this.plants.forEach((plant) => {
-      plant.update()
+      plant.update(timestamp)
       if (plant.canShoot) {
         plant.fire()
         this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
@@ -101,6 +97,8 @@ export class Game {
     this.wave.attackPlants(this.plants)
     this.wave.moveZombies()
     this.wave.checkZombiesLife()
+    this.sunManager.fallSuns(this)
+    this.sunManager.collectSun(this)
     this.spawns()
   }
 
@@ -125,48 +123,13 @@ export class Game {
    * que nascem por tempo.
    */
   spawns = () => {
-    this.spawnSun()
+    this.sunManager.spawnSun(this)
     this.plants.forEach((plant) => {
       if (plant.isSunFlower) {
-        plant.createSun(this.suns)
+        plant.createSun(this.sunManager)
       }
     })
     this.wave.spawnZombie()
-  }
-
-  /**
-   * Detecta se o mouse colidiu com um Sol
-   * presente no canvas.
-   *
-   * @param {Sun} sun
-   */
-  collectSun = (sun) => {
-    if (!detectMouseCollision(this.mousePos, sun)) return
-
-    this.mySuns += sun.value
-
-    this.suns.splice(this.suns.indexOf(sun), 1)
-  }
-
-  /**
-   * Cria um sol quando o `sunTimer`
-   * alcançar `timeToSpawnSun`.
-   */
-  spawnSun = () => {
-    this.sunTimer += 1
-    if (this.sunTimer > this.timeToSpawnSun) {
-      this.addSun()
-      this.sunTimer = 0
-    }
-  }
-
-  /**
-   * Adiciona um sol a coleção de sois.
-   */
-  addSun = () => {
-    const x = Math.floor(Math.random() * this.cnv.width)
-    const y = Math.floor(Math.random())
-    this.suns.push(new Sun(x, y, true))
   }
 
   /**
@@ -175,7 +138,6 @@ export class Game {
    *
    * @param {number[2]} plantPos - posição da nova planta
    * @param {number[2]} gridPos - grid onde vai ser colocada a planta
-   * @param {Grid} grid - grid para plantar
    */
   plant = (plantPos, gridPos) => {
     if (!!this.lawn.grid[gridPos[0]][gridPos[1]].content) return
@@ -229,6 +191,10 @@ export class Game {
         gridPos[1],
         this.plants[this.plants.length - 1]
       )
+
+      if (newPlant.isSunFlower) {
+        newPlant.initSunCycle()
+      }
 
       this.mySuns -= this.currentPlant.cust
       this.currentPlant = {}
@@ -305,6 +271,9 @@ export class Game {
             ? this.mouseFlags.free
             : this.mouseFlags.remove
       }
+      if (event.key.toLowerCase() === CONTROLS.ESC) {
+        console.log("Menu Game")
+      }
     })
 
     document.addEventListener("mousemove", (event) => {
@@ -314,13 +283,15 @@ export class Game {
   }
 
   /**
-   * Loop do jogo, vai chamar a função
-   * para desenhar e atualizar.
+   * Loop principal do jogo/animacao, executado a cada frame.
+   *
+   * @param {DOMHighResTimeStamp} timestamp - O timestamp atual em milissegundos,
+   * fornecido pelo `requestAnimationFrame`.
    */
-  run = () => {
+  run = (timestamp) => {
     this.clearCanvas(this.ctx)
     this.draw()
-    this.update()
+    this.update(timestamp)
     window.requestAnimationFrame(this.run)
   }
 

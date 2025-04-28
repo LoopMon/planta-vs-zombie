@@ -1,21 +1,58 @@
 import { Rectangle } from "./Rectangle.js"
 import { ZOMBIE } from "../constants.js"
 
+/**
+ * Classe que representa um zumbi no jogo.
+ *
+ * Herda da classe Rectangle e é responsável pelo comportamento dos zumbis.
+ *
+ * @extends Rectangle
+ * @property {boolean} canMove - Indica se o zumbi pode se mover
+ * @property {boolean} canAttack - Indica se o zumbi pode atacar
+ * @property {number} speed - Velocidade de movimento do zumbi (pixels por frame)
+ * @property {number} life - Vida atual do zumbi
+ * @property {number} damage - Dano causado pelo zumbi em cada ataque
+ * @property {Plant|null} targetPlant - Planta alvo do zumbi (null se nenhum alvo)
+ * @property {number} currentTime - Timestamp do último ataque
+ * @property {number} timeToAttack - Intervalo entre ataques (em milissegundos)
+ */
 export class Zombie extends Rectangle {
-  constructor(x, y, width, height, type) {
+  canMove = true
+  canAttack = false
+  speed = ZOMBIE.SPEED
+  life = ZOMBIE.LIFE
+  damage = ZOMBIE.DAMAGE
+  targetPlant = null
+  currentTime = 0
+  timeToAttack = ZOMBIE.TIME_TO_ATTACK
+
+  /**
+   * Cria uma nova instância de Zombie
+   * @param {number} x - Posição X inicial
+   * @param {number} y - Posição Y inicial
+   * @param {number} width - Largura do zumbi
+   * @param {number} height - Altura do zumbi
+   */
+  constructor(x, y, width, height) {
     super(x, y, width, height, "red")
-    this.type = type
-    this.canMove = true
-    this.speed = ZOMBIE.SPEED
-    this.life = ZOMBIE.LIFE
-    this.damage = ZOMBIE.DAMAGE
-    this.attackTimer = 0
-    this.timeToAttack = 100
-    this.targetPlant = null
   }
 
   /**
-   * Move o zombie para a esquerda.
+   * Atualiza o estado do zumbi e verifica se é hora de atacar novamente.
+   *
+   * @param {number} timestamp - O timestamp atual do jogo em milissegundos
+   */
+  update(timestamp) {
+    if (this.targetPlant !== null) {
+      if (timestamp - this.currentTime > this.timeToAttack) {
+        this.currentTime = timestamp
+        this.canAttack = true
+      }
+    }
+  }
+
+  /**
+   * Move o zumbi para a esquerda (em direção às plantas)
    */
   move() {
     if (!this.canMove) return
@@ -23,11 +60,9 @@ export class Zombie extends Rectangle {
   }
 
   /**
-   * Verifica se colidiu com uma planta.
+   * Verifica colisão com uma planta e define-a como alvo se houver contato.
    *
-   * Se houver colisão chama o método `attackPlant`.
-   *
-   * @param {Plant} plant
+   * @param {Plant} plant - A planta a ser verificada como alvo
    */
   plantDetection(plant) {
     if (!this.isCollidingWith(plant)) {
@@ -44,25 +79,26 @@ export class Zombie extends Rectangle {
   }
 
   /**
-   * Ataca a planta tirando `1` do `plant.life` da planta.
+   * Realiza um ataque à planta alvo, causando dano.
    *
-   * @param {Plant} plant
+   * @param {Plant} plant - A planta a ser atacada
    */
   attackPlant(plant) {
-    this.attackTimer += 1
-    if (this.attackTimer >= this.timeToAttack) {
-      this.attackTimer = 0
-      plant.life -= this.damage
-      if (plant.life <= 0 || !this.isCollidingWith(plant)) {
-        this.canMove = true
-        this.targetPlant = null
-      }
-      console.log("atacou")
+    if (!this.canAttack) return
+
+    plant.life -= this.damage
+    if (plant.life <= 0 || !this.isCollidingWith(plant)) {
+      this.canMove = true
+      this.targetPlant = null
     }
+    console.log("atacou")
+    this.canAttack = false
   }
 
   /**
-   * Tira 1 de vida do zombie.
+   * Reduz a vida do zumbi quando ele sofre dano.
+   *
+   * @param {number} plantDamage - Quantidade de dano a ser aplicado
    */
   takeDamage(plantDamage) {
     this.life -= plantDamage

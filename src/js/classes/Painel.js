@@ -11,7 +11,7 @@ export class Painel extends Rectangle {
    * @param {number} width - largura do painel
    * @param {number} height - altura do painel
    * @param {string} backgroundColor - cor do painel
-   * @param {Object[]} items - itens do painel
+   * @param {MenuItem[]} items - itens do painel
    * @returns {Painel}
    */
   constructor(x, y, width, height, backgroundColor, items) {

@@ -26,6 +26,9 @@ export const PLANT = {
   LIFE: 100,
   WIDTH: 40,
   HEIGHT: 60,
+  TIME_TO_FIRE: 2_000, // ms
+  TIME_TO_FIRST_PLANT: 7_000, // ms
+  TIME_TO_PLANT: 24_000, // ms
 }
 
 export const ZOMBIE = {
@@ -34,6 +37,8 @@ export const ZOMBIE = {
   SPEED: 0.5,
   WIDTH: 50,
   HEIGHT: 70,
+  TIME_TO_ATTACK: 1_000, // ms
+  TIME_TO_SPAWN: 10_000, // ms
 }
 
 export const BULLET = {
@@ -45,6 +50,7 @@ export const SUN = {
   VALUE: 25,
   SPEED: 0.5,
   SCALE: 30,
+  TIME_TO_SPAWN: 10_000, // ms
 }
 
 export const COLORS = {
@@ -66,4 +72,5 @@ export const COLORS = {
 export const CONTROLS = {
   R: "r",
   P: "p",
+  ESC: "escape",
 }
