@@ -18,9 +18,9 @@ export class Sun extends Rectangle {
   speed = SUN.SPEED
 
   /**
-   * @param {number} x
-   * @param {number} y
-   * @param {boolean} canFall
+   * @param {number} x - posição x no canvas
+   * @param {number} y - posição y no canvas
+   * @param {boolean} canFall - diz se pode cair
    */
   constructor(x, y, canFall) {
     super(
