@@ -203,9 +203,7 @@ export class Game {
         this.plants[this.plants.length - 1]
       )
 
-      if (newPlant.isSunFlower) {
-        newPlant.initSunCycle()
-      }
+      newPlant.initCycle()
 
       this.mySuns -= this.currentPlant.cust
       this.currentPlant = {}
