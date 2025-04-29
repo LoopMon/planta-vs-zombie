@@ -10,24 +10,31 @@ import { createLawn } from "../functions.js"
 import { PLANT, COLORS, CONTROLS, FONT } from "../constants.js"
 
 export class Game {
-  mouseFlags = {
-    free: 0,
-    plant: 1,
-    remove: 2,
+  mouseStates = {
+    FREE: 0,
+    PLANT: 1,
+    REMOVE: 2,
   }
-  gameFlags = {
-    play: 0,
-    pause: 1,
-    menu: 2,
+  gameStates = {
+    PLAYING: 0,
+    PAUSED: 1,
   }
-  mouseState = this.mouseFlags.free
-  gameState = this.gameFlags.play
+  gameScreens = {
+    START_SCREEN: 0,
+    HOME: 1,
+    SETTINGS: 2,
+    EXTRAS: 3,
+    GAME: 4,
+  }
+  currentGameState = this.gameStates.PLAYING
+  currentMouseState = this.mouseStates.FREE
+  currentGameScreen = this.gameScreens.GAME
   mousePos = [0, 0]
-  currentPlant = {}
   painel = null
   lawn = null
   wave = null
   plants = []
+  currentPlant = {}
   sunManager = new SunManager()
   mySuns = 5_000 // para desenvolvimento
 
@@ -115,7 +122,11 @@ export class Game {
     this.ctx.fillStyle = COLORS.RGB_GREEN
     let fontConfig = `${FONT.MEDIUM}px ${FONT.FAMILY}`
     this.ctx.font = fontConfig
-    this.ctx.fillText(this.mouseState, this.mousePos[0], this.mousePos[1])
+    this.ctx.fillText(
+      this.currentMouseState,
+      this.mousePos[0],
+      this.mousePos[1]
+    )
   }
 
   /**
@@ -143,7 +154,7 @@ export class Game {
     if (!!this.lawn.grid[gridPos[0]][gridPos[1]].content) return
 
     if (this.currentPlant && this.mySuns >= this.currentPlant.cust) {
-      let newPlant
+      let newPlant = null
 
       switch (this.currentPlant.name) {
         case "Sol":
@@ -198,17 +209,15 @@ export class Game {
 
       this.mySuns -= this.currentPlant.cust
       this.currentPlant = {}
-      this.mouseState = this.mouseFlags.free
+      this.currentMouseState = this.mouseStates.FREE
     }
   }
 
   removePlant(gridPos) {
-    if (this.mouseState === this.mouseFlags.remove) {
-      // Remove do grid e obtém a planta removida
+    if (this.currentMouseState === this.mouseStates.REMOVE) {
       const removedPlant = this.lawn.removePlant(gridPos[0], gridPos[1])
 
       if (removedPlant) {
-        // Remove do array plants
         this.plants = this.plants.filter((plant) => plant !== removedPlant)
         // Devolve parte do custo
         // this.mySuns += Math.floor(removedPlant.custo * 0.5)
@@ -237,10 +246,10 @@ export class Game {
           mousePos[0] < item.x + item.width &&
           mousePos[1] > item.y &&
           mousePos[1] < item.y + item.height &&
-          this.mouseState == this.mouseFlags.free &&
+          this.currentMouseState == this.mouseStates.FREE &&
           this.mySuns >= item.cust
         ) {
-          this.mouseState = this.mouseFlags.plant
+          this.currentMouseState = this.mouseStates.PLANT
           this.currentPlant = item
         }
       })
@@ -254,7 +263,7 @@ export class Game {
             mousePos[1] > field.y &&
             mousePos[1] < field.y + field.height
           ) {
-            if (this.mouseState === this.mouseFlags.remove) {
+            if (this.currentMouseState === this.mouseStates.REMOVE) {
               this.removePlant([i, j])
             } else {
               this.plant([field.x, field.y], [i, j])
@@ -266,13 +275,13 @@ export class Game {
 
     document.addEventListener("keyup", (event) => {
       if (event.key.toLowerCase() === CONTROLS.R) {
-        this.mouseState =
-          this.mouseState === this.mouseFlags.remove
-            ? this.mouseFlags.free
-            : this.mouseFlags.remove
+        this.currentMouseState =
+          this.currentMouseState === this.mouseStates.REMOVE
+            ? this.mouseStates.FREE
+            : this.mouseStates.REMOVE
       }
       if (event.key.toLowerCase() === CONTROLS.ESC) {
-        console.log("Menu Game")
+        console.log("Pause Game")
       }
     })
 
