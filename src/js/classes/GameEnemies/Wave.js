@@ -1,5 +1,5 @@
 import { Zombie } from "./Zombie.js"
-import { COLORS, ZOMBIE } from "../constants.js"
+import { COLORS, ZOMBIE } from "../../constants.js"
 
 /**
  * Classe que controla as ondas de zumbis no jogo.

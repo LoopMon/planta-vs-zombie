@@ -1,5 +1,5 @@
-import { Plant } from "../Plant.js"
-import { Bullet } from "../Bullet.js"
+import { Plant } from "./Plant.js"
+import { Bullet } from "./Bullet.js"
 import { PLANT } from "../../constants.js"
 
 export class ShooterPlant extends Plant {

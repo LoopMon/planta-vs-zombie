@@ -1,7 +1,7 @@
-import { Painel } from "./Painel.js"
-import { Wave } from "./Wave.js"
-import { SunManager } from "./SunManager.js"
-import { PlantManager } from "./Plants/PlantManager.js"
+import { Painel } from "./GamePainel/Painel.js"
+import { Wave } from "./GameEnemies/Wave.js"
+import { SunManager } from "./GameSun/SunManager.js"
+import { PlantManager } from "./GamePlants/PlantManager.js"
 import { createLawn } from "../functions.js"
 import { COLORS, CONTROLS, FONT } from "../constants.js"
 
@@ -16,11 +16,13 @@ export class Game {
     PAUSED: 1,
   }
   gameScreens = {
-    START_SCREEN: 0,
+    START_SCREEN: 0, // pode ser uma tela de loading, pensando ainda
     HOME: 1,
-    SETTINGS: 2,
-    EXTRAS: 3,
-    GAME: 4,
+    LEVELS: 2,
+    SETTINGS: 3,
+    EXTRAS: 4,
+    GAME: 5,
+    PAUSE: 6, // não sei se pode estar aqui
   }
   currentGameState = this.gameStates.PLAYING
   currentMouseState = this.mouseStates.FREE

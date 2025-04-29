@@ -1,6 +1,6 @@
-import { Rectangle } from "./Rectangle.js"
-import { createPainelItems } from "../functions.js"
-import { COLORS, FONT, GAME } from "../constants.js"
+import { Rectangle } from "../Rectangle.js"
+import { createPainelItems } from "../../functions.js"
+import { COLORS, FONT, GAME } from "../../constants.js"
 
 export class Painel extends Rectangle {
   /**

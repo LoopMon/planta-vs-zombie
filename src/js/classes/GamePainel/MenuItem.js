@@ -1,5 +1,5 @@
-import { Rectangle } from "./Rectangle.js"
-import { COLORS, FONT, GAME } from "../constants.js"
+import { Rectangle } from "../Rectangle.js"
+import { COLORS, FONT, GAME } from "../../constants.js"
 
 export class MenuItem extends Rectangle {
   constructor(x, y, width, height, name, cust) {

@@ -1,5 +1,5 @@
-import { Rectangle } from "./Rectangle.js"
-import { SUN, COLORS } from "../constants.js"
+import { Rectangle } from "../Rectangle.js"
+import { SUN, COLORS } from "../../constants.js"
 
 /**
  * Representa o Sol que cai lentamente na tela.

@@ -1,4 +1,4 @@
-import { Rectangle } from "./Rectangle.js"
+import { Rectangle } from "../Rectangle.js"
 
 export class Lawn extends Rectangle {
   constructor(painel, cnv, color, grid) {

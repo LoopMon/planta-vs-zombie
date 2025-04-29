@@ -1,6 +1,6 @@
 import { Sun } from "./Sun.js"
-import { SUN } from "../constants.js"
-import { detectMouseCollision } from "../functions.js"
+import { SUN } from "../../constants.js"
+import { detectMouseCollision } from "../../functions.js"
 
 export class SunManager {
   currentTime = 0
