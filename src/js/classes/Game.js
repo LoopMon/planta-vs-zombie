@@ -1,35 +1,38 @@
 import { Painel } from "./Painel.js"
 import { Wave } from "./Wave.js"
 import { SunManager } from "./SunManager.js"
-import { Nut } from "./Plants/Nut.js"
-import { SunFlower } from "./Plants/SunFlower.js"
-import { ShooterPlant } from "./Plants/ShooterPlant.js"
-import { DoubleShooterPlant } from "./Plants/DoubleShooterPlant.js"
+import { PlantManager } from "./Plants/PlantManager.js"
 import { createLawn } from "../functions.js"
-
-import { PLANT, COLORS, CONTROLS, FONT } from "../constants.js"
+import { COLORS, CONTROLS, FONT } from "../constants.js"
 
 export class Game {
-  mouseFlags = {
-    free: 0,
-    plant: 1,
-    remove: 2,
+  mouseStates = {
+    FREE: 0,
+    PLANT: 1,
+    REMOVE: 2,
   }
-  gameFlags = {
-    play: 0,
-    pause: 1,
-    menu: 2,
+  gameStates = {
+    PLAYING: 0,
+    PAUSED: 1,
   }
-  mouseState = this.mouseFlags.free
-  gameState = this.gameFlags.play
+  gameScreens = {
+    START_SCREEN: 0,
+    HOME: 1,
+    SETTINGS: 2,
+    EXTRAS: 3,
+    GAME: 4,
+  }
+  currentGameState = this.gameStates.PLAYING
+  currentMouseState = this.mouseStates.FREE
+  currentGameScreen = this.gameScreens.GAME
   mousePos = [0, 0]
-  currentPlant = {}
   painel = null
   lawn = null
   wave = null
-  plants = []
+  currentPlant = {}
+  plantManager = null
   sunManager = new SunManager()
-  mySuns = 5_000 // para desenvolvimento
+  mySuns = 1_000 // para desenvolvimento
 
   /**
    * Cria o jogo com todos os elementos necessários.
@@ -54,13 +57,7 @@ export class Game {
 
     this.painel.drawRect(this.ctx, this.mySuns)
 
-    this.plants.forEach((plant) => {
-      plant.drawRect(this.ctx)
-    })
-
-    this.plants.forEach((plant) => {
-      if (plant.canShoot) plant.drawFire(this.ctx)
-    })
+    this.plantManager.draw(this.ctx)
 
     this.wave.drawZombies(this.ctx)
 
@@ -77,24 +74,10 @@ export class Game {
    */
   update = (timestamp) => {
     this.sunManager.update(timestamp)
-
-    this.plants.forEach((plant) => {
-      this.wave.zombies.forEach((zombie) => {
-        if (plant.canShoot) plant.zombieDetection(zombie)
-      })
-    })
+    this.plantManager.update(timestamp, this.wave)
 
     this.wave.update(timestamp)
-
-    this.plants.forEach((plant) => {
-      plant.update(timestamp)
-      if (plant.canShoot) {
-        plant.fire()
-        this.wave.zombies.forEach((zombie) => plant.fireColision(zombie))
-      }
-    })
-
-    this.wave.attackPlants(this.plants)
+    this.wave.attackPlants(this.plantManager.plants)
     this.wave.moveZombies()
     this.wave.checkZombiesLife()
     this.sunManager.fallSuns(this)
@@ -115,7 +98,11 @@ export class Game {
     this.ctx.fillStyle = COLORS.RGB_GREEN
     let fontConfig = `${FONT.MEDIUM}px ${FONT.FAMILY}`
     this.ctx.font = fontConfig
-    this.ctx.fillText(this.mouseState, this.mousePos[0], this.mousePos[1])
+    this.ctx.fillText(
+      this.currentMouseState,
+      this.mousePos[0],
+      this.mousePos[1]
+    )
   }
 
   /**
@@ -124,11 +111,7 @@ export class Game {
    */
   spawns = () => {
     this.sunManager.spawnSun(this)
-    this.plants.forEach((plant) => {
-      if (plant.isSunFlower) {
-        plant.createSun(this.sunManager)
-      }
-    })
+    this.plantManager.spawns(this.sunManager)
     this.wave.spawnZombie()
   }
 
@@ -140,80 +123,33 @@ export class Game {
    * @param {number[2]} gridPos - grid onde vai ser colocada a planta
    */
   plant = (plantPos, gridPos) => {
-    if (!!this.lawn.grid[gridPos[0]][gridPos[1]].content) return
+    if (!this.hasResourcesForPlant()) return
 
-    if (this.currentPlant && this.mySuns >= this.currentPlant.cust) {
-      let newPlant
+    this.plantManager.addPlant(this.currentPlant.name, plantPos, gridPos)
+    this.mySuns -= this.currentPlant.cust
+    this.currentPlant = {}
+    this.currentMouseState = this.mouseStates.FREE
+  }
 
-      switch (this.currentPlant.name) {
-        case "Sol":
-          newPlant = new SunFlower(
-            plantPos[0],
-            plantPos[1],
-            PLANT.WIDTH,
-            PLANT.HEIGHT,
-            COLORS.CHOCOLATE
-          )
-          break
-        case "Simples":
-          newPlant = new ShooterPlant(
-            plantPos[0],
-            plantPos[1],
-            PLANT.WIDTH,
-            PLANT.HEIGHT,
-            COLORS.GREEN
-          )
-          break
-        case "Duplo":
-          newPlant = new DoubleShooterPlant(
-            plantPos[0],
-            plantPos[1],
-            PLANT.WIDTH,
-            PLANT.HEIGHT,
-            COLORS.PURPLE
-          )
-          break
-        case "Noz":
-          newPlant = new Nut(
-            plantPos[0],
-            plantPos[1],
-            PLANT.WIDTH,
-            PLANT.HEIGHT,
-            COLORS.BROWN
-          )
-          break
-        default:
-          return
-      }
-      this.plants.push(newPlant)
-      this.lawn.addPlant(
-        gridPos[0],
-        gridPos[1],
-        this.plants[this.plants.length - 1]
-      )
-
-      if (newPlant.isSunFlower) {
-        newPlant.initSunCycle()
-      }
-
-      this.mySuns -= this.currentPlant.cust
-      this.currentPlant = {}
-      this.mouseState = this.mouseFlags.free
+  /**
+   * Remove a planta do gramado quando o
+   * mouse se encontra no estado de REMOVE.
+   */
+  removePlant = (gridPos) => {
+    if (this.currentMouseState === this.mouseStates.REMOVE) {
+      this.plantManager.removePlant(gridPos)
+      this.currentMouseState = this.mouseStates.FREE
     }
   }
 
-  removePlant(gridPos) {
-    if (this.mouseState === this.mouseFlags.remove) {
-      // Remove do grid e obtém a planta removida
-      const removedPlant = this.lawn.removePlant(gridPos[0], gridPos[1])
-
-      if (removedPlant) {
-        // Remove do array plants
-        this.plants = this.plants.filter((plant) => plant !== removedPlant)
-        // Devolve parte do custo
-        // this.mySuns += Math.floor(removedPlant.custo * 0.5)
-      }
-    }
+  /**
+   * Verifica se possui planta na mão e
+   * se possui sois suficientes.
+   *
+   * @returns {boolean}
+   */
+  hasResourcesForPlant = () => {
+    return this.currentPlant && this.mySuns >= this.currentPlant.cust
   }
 
   /**
@@ -237,10 +173,10 @@ export class Game {
           mousePos[0] < item.x + item.width &&
           mousePos[1] > item.y &&
           mousePos[1] < item.y + item.height &&
-          this.mouseState == this.mouseFlags.free &&
+          this.currentMouseState == this.mouseStates.FREE &&
           this.mySuns >= item.cust
         ) {
-          this.mouseState = this.mouseFlags.plant
+          this.currentMouseState = this.mouseStates.PLANT
           this.currentPlant = item
         }
       })
@@ -254,7 +190,7 @@ export class Game {
             mousePos[1] > field.y &&
             mousePos[1] < field.y + field.height
           ) {
-            if (this.mouseState === this.mouseFlags.remove) {
+            if (this.currentMouseState === this.mouseStates.REMOVE) {
               this.removePlant([i, j])
             } else {
               this.plant([field.x, field.y], [i, j])
@@ -266,13 +202,13 @@ export class Game {
 
     document.addEventListener("keyup", (event) => {
       if (event.key.toLowerCase() === CONTROLS.R) {
-        this.mouseState =
-          this.mouseState === this.mouseFlags.remove
-            ? this.mouseFlags.free
-            : this.mouseFlags.remove
+        this.currentMouseState =
+          this.currentMouseState === this.mouseStates.REMOVE
+            ? this.mouseStates.FREE
+            : this.mouseStates.REMOVE
       }
       if (event.key.toLowerCase() === CONTROLS.ESC) {
-        console.log("Menu Game")
+        console.log("Pause Game")
       }
     })
 
@@ -327,6 +263,7 @@ export class Game {
       items
     )
     this.lawn = createLawn(this.painel, this.cnv, [5, 13])
+    this.plantManager = new PlantManager(this.lawn, this)
     this.wave = new Wave(
       this.lawn.grid.map((_, index) => this.lawn.grid[index][0].y)
     )

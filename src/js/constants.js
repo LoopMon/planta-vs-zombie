@@ -27,8 +27,8 @@ export const PLANT = {
   WIDTH: 40,
   HEIGHT: 60,
   TIME_TO_FIRE: 2_000, // ms
-  TIME_TO_FIRST_PLANT: 7_000, // ms
-  TIME_TO_PLANT: 24_000, // ms
+  TIME_TO_FIRST_SUN: 7_000, // ms
+  TIME_TO_SUN: 24_000, // ms
 }
 
 export const ZOMBIE = {

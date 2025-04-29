@@ -7,7 +7,6 @@ export class ShooterPlant extends Plant {
   damage = PLANT.DAMAGE
   hasZombieInLine = false
   canShoot = true
-  currentTime = 0
   timeToFire = PLANT.TIME_TO_FIRE
 
   /**

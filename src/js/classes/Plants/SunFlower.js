@@ -16,23 +16,12 @@ import { PLANT } from "../../constants.js"
  * @property {boolean} isActive - Indica se a planta está ativa e pode gerar sóis
  */
 export class SunFlower extends Plant {
-  currentTime = 0
-  timeToSpawnFirstSun = PLANT.TIME_TO_FIRST_PLANT
-  timeToSpawnSun = Plant.TIME_TO_PLANT
+  timeToSpawnFirstSun = PLANT.TIME_TO_FIRST_SUN
+  timeToSpawnSun = PLANT.TIME_TO_SUN
   isSunFlower = true
   canSpawnSun = false
   firstSunSpawned = false
   isActive = false
-
-  /**
-   * Inicia o ciclo de geração de sóis do Girassol.
-   *
-   * Deve ser chamado quando a planta é colocada no gramado.
-   */
-  initSunCycle() {
-    this.isActive = true
-    this.currentTime = performance.now()
-  }
 
   /**
    * Atualiza o estado do Girassol e verifica se é hora de gerar um novo sol.
