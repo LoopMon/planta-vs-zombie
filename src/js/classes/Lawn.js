@@ -19,6 +19,10 @@ export class Lawn extends Rectangle {
     })
   }
 
+  canPlantHere(gridPos) {
+    return !this.grid[gridPos[0]][gridPos[1]].content
+  }
+
   addPlant(row, col, plant) {
     if (this.grid[row][col].content === null) {
       this.grid[row][col].content = plant
