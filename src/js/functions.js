@@ -1,8 +1,8 @@
 /// <reference path="./types.js" />
 
-import { Cell } from "./classes/Cell.js"
-import { Lawn } from "./classes/Lawn.js"
-import { MenuItem } from "./classes/MenuItem.js"
+import { Cell } from "./classes/GameLawn/Cell.js"
+import { Lawn } from "./classes/GameLawn/Lawn.js"
+import { MenuItem } from "./classes/GamePainel/MenuItem.js"
 import { GAME, COLORS, LAWN, PAINEL } from "./constants.js"
 
 /**

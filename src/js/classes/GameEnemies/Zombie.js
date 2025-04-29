@@ -1,5 +1,5 @@
-import { Rectangle } from "./Rectangle.js"
-import { ZOMBIE } from "../constants.js"
+import { Rectangle } from "../Rectangle.js"
+import { ZOMBIE } from "../../constants.js"
 
 /**
  * Classe que representa um zumbi no jogo.

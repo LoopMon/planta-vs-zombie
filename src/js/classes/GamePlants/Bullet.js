@@ -1,5 +1,5 @@
-import { Rectangle } from "./Rectangle.js"
-import { BULLET, COLORS } from "../constants.js"
+import { Rectangle } from "../Rectangle.js"
+import { BULLET, COLORS } from "../../constants.js"
 
 export class Bullet extends Rectangle {
   speed = BULLET.SPEED

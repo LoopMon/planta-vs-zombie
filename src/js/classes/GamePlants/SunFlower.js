@@ -1,5 +1,5 @@
-import { Plant } from "../Plant.js"
-import { Sun } from "../Sun.js"
+import { Plant } from "./Plant.js"
+import { Sun } from "../GameSun/Sun.js"
 import { PLANT } from "../../constants.js"
 
 /**

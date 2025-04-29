@@ -1,5 +1,5 @@
-import { Rectangle } from "./Rectangle.js"
-import { PLANT } from "../constants.js"
+import { Rectangle } from "../Rectangle.js"
+import { PLANT } from "../../constants.js"
 
 export class Plant extends Rectangle {
   life = PLANT.LIFE
