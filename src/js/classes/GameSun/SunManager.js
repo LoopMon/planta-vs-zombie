@@ -47,10 +47,10 @@ export class SunManager {
    *
    * @param {Sun} sun
    */
-  collectSun = (game) => {
+  collectSun = (game, screenPlaying) => {
     this.suns.forEach((sun) => {
       if (detectMouseCollision(game.mousePos, sun)) {
-        game.mySuns += sun.value
+        screenPlaying.mySuns += sun.value
         this.suns.splice(this.suns.indexOf(sun), 1)
       }
     })
