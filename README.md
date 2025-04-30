@@ -19,9 +19,9 @@ Este é um projeto inspirado no clássico jogo "Plants vs. Zombies". O objetivo 
 
 ## Diagrama de Classe
 
-<div align="center">
-<img src="./docs/img/Planta vs Zombie - Diagrama.png">
-</div>
+O diagrama acabou ficando muito grande para ser apresentado aqui, então vou deixar o caminho para vê-lo:
+
+- [diagrama-classes.svg](./docs/img/Planta%20vs%20Zombie%20-%20Diagrama.svg)
 
 ## Como Executar
 

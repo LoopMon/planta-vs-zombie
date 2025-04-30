@@ -2,142 +2,234 @@
   class Game {
     - cnv: HTMLCanvasElement
     - ctx: CanvasRenderingContext2D
-    - mouseFlags: Object
-    - gameFlags: Object
-    - mouseState: Integer
-    - gameState: Integer
-    - mousePos: Float[2]
-    - currentPlant: Object
-    - painel: Painel
-    - wave: Wave
-    - plants: Plant[]
-    - suns: Sun[]
-    - mySuns: Float
-    - sunTimer: Float
-    - timeToSpawnSun: Float
-    ---
-    + draw(): Void
-    + update(): Void
-    + drawMouseInfo: Void
-    + spawns: Void
-    + collectSun(sun: Sun): Void
-    + spawnSun(): Void
-    + addSun(): Void
-    + plant(plantPos: Float[2], gridPos: Integer[2])
-    + removePlant(gridPos: Integer[2]): Void
-    + clearCanvas(): Void
-    + addEvents(): Void
-    + run(): Void
-    + init(): Void
+    - gameScreens: Object
+    - currentGameScreen: Screen
+    - mousePos: number[2]
+
+    + draw(): void
+    + update(timestamp: number): void
+    + clearCanvas(): void
+    + setScreen(screenName: string): void
+    + addEvents(): void
+    + run(timestamp: number): void
+    + init(): void
   }
 
-  class Rectangle {
-    - x: Float
-    - y: Float
-    - width: Float
-    - height: Float
-    - color: String
+  class Screen {
+    - name: string
+    - game: Game
+    - buttons: Button[]
 
-    + drawRect(ctx: CanvasRenderingContext2D): Void
-    + drawStroke(ctx: CanvasRenderingContext2D, color: String, lineWidth: Float): Void
-    + isCollidingWith(rect: Rectangle): Boolean
-    + move(x: Float, y: Float): Void
+    + draw(ctx: CanvasRenderingContext2D): void
+    + update(timestamp: number): void
+    + handleClick(mousePos: number[2]): void
+    + onExit(): void
+    + onEnter(): void
+  }
+
+  class GameScreen extends Screen {
+    - gameStates: Object
+    - mouseStates: Object
+    - currentGameState: number
+    - currentMouseState: number
+    - painel: Painel
+    - lawn: Lawn
+    - wave: Wave
+    - plantManager: PlantManger
+    - currentPlant: Object
+    - sunManager: SunManager
+    - mySuns: number
+
+    + onEnter(): void
+    + draw(ctx: CanvasRenderingContext2D): void
+    + update(timestamp: number): void
+    + drawMouseInfo(ctx: CanvasRenderingContext2D, mousePos: number[2]): void
+    + spawns(): void
+    + plant(plantPos: number[2], gridPos: number[2]): void
+    + removePlant(gridPos: number[2]): void
+    + hasResourcesForPlant(): boolean
+    + init(): void
+  }
+
+  class LevelsScreen extends Screen {}
+  class SettingsScreen extends Screen {}
+  class CreditsScreen extends Screen {}
+
+  class Rectangle {
+    - x: number
+    - y: number
+    - width: number
+    - height: number
+    - color: string
+
+    + drawRect(ctx: CanvasRenderingContext2D): void
+    + drawStroke(ctx: CanvasRenderingContext2D, color: string, lineWidth: number): void
+    + isCollidingWith(rect: Rectangle): boolean
+    + move(x: number, y: number): void
+    + getRight(): number
+    + getBottom(): number
+  }
+
+  class Button extends Rectangle {
+    - label: string
+    - action: () => void
+
+    + update(mousePos: number[2]): void
+    + onClick(mousePos: number[2]): void
   }
 
   class Painel extends Rectangle {
-    - items: Item[]
+    - items: MenuItem[]
 
-    + drawPlayerSuns(ctx: CanvasRenderingContext2D, playerSuns: Float): Void
-    + drawItems(ctx: CanvasRenderingContext2D): Void
-    + init(): Void
+    + drawPlayerSuns(ctx: CanvasRenderingContext2D, playerSuns: number): void
+    + drawItems(ctx: CanvasRenderingContext2D): void
+  }
+
+  class MenuItem extends Rectangle {
+    - name: string
+    - cust: number
   }
 
   class Sun extends Rectangle {
-    {static} VALUE: Float
-    {static} SPEED: Float
+    - value: number
+    - speed: number
 
     + fall(): Void
   }
 
-  class Zombie extends Rectangle {
-    - canMove: Boolean
-    - speed: Float
-    - life: Float
-    - damage: Float
-    - attackTimer: Float
-    - timeToAttack: Float
-    - targetPlant: Plant
+  class SunManager {
+    - currentTime: number
+    - timeToSpawn: number
+    - suns: Sun[]
+    - canSpawn: boolean
 
-    + plantDetection(plant: Plant): Void
-    + attackPlant(plant: Plant): Void
-    + takeDamage(): Void
+    + draw(ctx: CanvasRenderingContext2D): void
+    + update(timestamp: number): void
+    + spawnSun(screenWidth: number): void
+    + fallSuns(screenHeight: number): void
+    + collectSun(mousePos: number[2], gameScreen: GameScreen): void
+  }
+
+  class Zombie extends Rectangle {
+    - canMove: boolean
+    - canAttack: boolean
+    - speed: number
+    - life: number
+    - damage: number
+    - targetPlant: Plant
+    - currentTime: number
+    - timeToAttack: number
+
+    + update(timestamp: number): void
+    + plantDetection(plant: Plant): void
+    + attackPlant(plant: Plant): void
+    + takeDamage(plant: Plant): void
+  }
+
+  class Wave {
+    - zombies: Zombie[]
+    - zombiesRound: number
+    - maxZombiePerRound: number
+    - round: number
+    - currentTime: number
+    - timeToSpawnZombie: number
+    - canSpawn: boolean
+    - gridRowsPos: number[]
+
+    + update(timestamp: number): void
+    + drawZombies(ctx: CanvasRenderingContext2D): void
+    + moveZombies(): void
+    + attackPlants(plants: Plant[]): void
+    + spawnZombie(): void
+    + checkZombiesLife(): void
+  }
+
+  class Cell extends Rectangle {
+    - content: Plant | null
   }
 
   class Lawn extends Rectangle {
     - grid: Cell[][]
 
-    + drawCells(ctx: CanvasRenderingContext2D): Void
-    + addPlant(row: Integer, col: Integer, plant: Plant): Boolean
-    + removePlant(row: Integer, col: Integer): Plant
-  }
-
-  class Cell extends Rectangle {
-    - content: Plant
+    + drawCells(ctx: CanvasRenderingContext2D): void
+    + canPlantHere(gridPos: number[2]): boolean
+    + addPlant(row: number, col: number, plant: Plant): boolean
+    + removePlant(row: number, col: number): Plant
   }
 
   class Bullet extends Rectangle {
-    - speed: Float
+    - speed: number
+  }
+
+  class PlantManager {
+    - lawn: Lawn
+    - game: Game
+    - plants: Plant[]
+
+    + draw(ctx: CanvasRenderingContext2D): void
+    + update(timestamp: number, wave: Wave): void
+    + spawns(sunManager: SunManager): void
+    + addPlant(type: string, plantPos: number[2], gridPos: number[2]): boolean
+    + removePlant(gridPos: number[2]): void
   }
 
   class Plant extends Rectangle {
-    - life: Float
-    - gridPos: Integer[2]
-    - canShoot: Boolean
+    - life: number
+    - gridPos: number[2]
+    - canShoot: boolean
+    - isSunFlower: boolean
+    - isActive: boolean
+    - currentTime: number
+
+    + initCycle(): void
+    + update(timestamp: number): void
   }
 
   class ShooterPlant extends Plant {
     - bullets: Bullet[]
-    - fireTimer: Float
-    - timeToFire: Float
-    - damage: Float
-    - hasZombieInLine: Boolean
+    - damage: number
+    - hasZombieInLine: boolean
+    - canShoot: boolean
+    - timeToFire: number
 
-    + drawFire(ctx: CanvasRenderingContext2D): Void
-    + fire(): Void
-    + zombieDetection(zombie: Zombie): Void
-    + updateShooting(): Void
-    + fireColision(zombie: Zombie): Boolean
+    + drawFire(ctx: CanvasRenderingContext2D): void
+    + fire(): void
+    + zombieDetection(zombie: Zombie): void
+    + fireColision(zombie: Zombie): boolean
   }
 
   class DoubleShooterPlant extends ShooterPlant {}
 
-  class Nut extends Plant {}
+  class SunFlower extends Plant {
+    - timeToSpawnFirstSun: number
+    - timeToSpawnSun: number
+    - canSpawnSun: boolean
+    - firstSunSpawned: boolean
 
-  class Wave {
-    - zombies: Zombie[]
-    - zombiesRound: Float
-    - maxZombiePerRound: Float
-    - round: Integer
-    - spawnTimer: Float
-    - timeToSpawnZombie: Float
-    - gridRowsPos: Float[]
-
-    + drawZombies(ctx: CanvasRenderingContext2D): Void
-    + moveZombies(): Void
-    + attackPlants(plants: Plant[]): void
-    + spawnZombie(): Void
-    + checkZombiesLife(): Void
+    + createSun(sunManager: SunManager): void
   }
 
-  Game *-- Wave
-  Game *-- Painel
-  Game o-- Sun
+  class Nut extends Plant {}
+
+  Game *-- Screen
+
+  Screen o-- Button
+
+  GameScreen *-- Wave
+  GameScreen *-- Painel
+  GameScreen *-- PlantManager
+  GameScreen *-- SunManger
+  GameScreen *-- Lawn
+
+  Painel *-- MenuItem
+
+  SunManager o-- Sun
 
   Wave o-- Zombie
 
   ShooterPlant o-- Bullet
 
-  Lawn <-- ShooterPlant
+  Lawn <-- Plant
   Lawn *-- Cell
 
   hide empty members
