@@ -1,5 +1,5 @@
 import { Wave } from "../GameEnemies/Wave.js"
-import { Button } from "./Button.js"
+import { Button } from "./UI/Button.js"
 import { Screen } from "./Screen.js"
 import { Painel } from "../GamePainel/Painel.js"
 import { Rectangle } from "../Rectangle.js"
@@ -54,7 +54,7 @@ export class GameScreen extends Screen {
 
     this.sunManager.draw(ctx)
 
-    super.drawButtons(ctx)
+    super.drawElements(ctx)
 
     this.pauseOverlay.draw(ctx)
 
@@ -249,18 +249,18 @@ export class GameScreen extends Screen {
       COLORS.RGB_BLUE
     )
     this.pauseOverlay = new PauseOverlay(rect, this)
-    this.buttons = [
-      new Button(
-        this.painel.width - 100,
-        0,
-        100,
-        50,
-        COLORS.RGB_BLUE,
-        "Pausar",
-        () => {
-          this.pauseOverlay.toggle()
-        }
-      ),
+
+    const rectBtnPausar = new Rectangle(
+      this.painel.width - 100,
+      0,
+      100,
+      50,
+      COLORS.RGB_BLUE
+    )
+    this.elements = [
+      new Button(rectBtnPausar, "Pausar", () => {
+        this.pauseOverlay.toggle()
+      }),
     ]
   }
 }
