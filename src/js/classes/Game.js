@@ -3,7 +3,7 @@ import { HomeScreen } from "./GameScreens/HomeScreen.js"
 import { LevelsScreen } from "./GameScreens/LevelsScreen.js"
 import { SettingsScreen } from "./GameScreens/SettingsScreen.js"
 import { CreditsScreen } from "./GameScreens/CreditsScreen.js"
-import { COLORS, CONTROLS } from "../constants.js"
+import { COLORS } from "../constants.js"
 
 export class Game {
   gameScreens = {
@@ -20,12 +20,11 @@ export class Game {
   /**
    * Cria o jogo com todos os elementos necessários.
    *
-   * @param {HTMLCanvasElement} cnv - Elemento canvas HTML
    * @param {CanvasRenderingContext2D} ctx - Contexto de renderização do canvas
    * @returns {Game}
    */
-  constructor(cnv, ctx) {
-    this.cnv = cnv
+  constructor(ctx) {
+    this.cnv = ctx.canvas
     this.ctx = ctx
     // Definindo largura e altura do canvas para dimensões da tela
     this.cnv.width = window.innerWidth
@@ -105,6 +104,8 @@ export class Game {
   init = () => {
     this.addEvents()
     console.log("Starting Game!!!")
+    this.currentGameScreen.init()
+
     this.run()
   }
 }
