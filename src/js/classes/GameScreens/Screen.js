@@ -1,40 +1,39 @@
-import { COLORS, CONTROLS } from "../../constants.js"
-
 export class Screen {
-  buttons = []
+  elements = []
 
+  /**
+   *
+   * @param {string} name - nome para identificar a tela
+   * @param {Game} game - referência a classe Game
+   */
   constructor(name, game) {
     this.name = name
     this.game = game
   }
 
+  init() {}
+
   draw(ctx) {
-    this.drawTitle(ctx)
-    this.drawButtons(ctx)
+    this.drawElements(ctx)
   }
 
-  drawTitle(ctx) {
-    ctx.fillStyle = COLORS.RGB_BLACK
-    ctx.font = "60px Arial"
-    let text = `${this.name} Screen`
-    ctx.fillText(text, 10, 65)
-  }
-
-  drawButtons(ctx) {
-    this.buttons.forEach((button) => {
-      button.drawRect(ctx)
+  drawElements(ctx) {
+    this.elements.forEach((element) => {
+      element.draw(ctx)
     })
   }
 
   update(timestamp) {
-    this.buttons.forEach((button) => {
-      button.update(this.game.mousePos)
+    this.elements.forEach((element) => {
+      element.update(this.game.mousePos)
     })
   }
 
   handleClick(mousePos) {
-    this.buttons.forEach((button) => {
-      button.onClick(mousePos)
+    this.elements.forEach((element) => {
+      if (typeof element.onClick === "function") {
+        element.onClick(mousePos)
+      }
     })
   }
 
@@ -46,5 +45,6 @@ export class Screen {
 
   onEnter() {
     console.log("Entrou na tela:", this.name)
+    this.init()
   }
 }
