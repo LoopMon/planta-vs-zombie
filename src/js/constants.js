@@ -62,11 +62,13 @@ export const COLORS = {
   RGB_DARK_GREEN: "#0a5c0a",
   RGB_FOREST_GREEN: "#228b22",
   RGB_BLACK: "#000",
+  RGB_WHITE: "#FFF",
   RGB_RED: "#F00",
   RGB_GREEN: "#0F0",
   RGB_BLUE: "#00F",
   RGB_YELLOW: "#FF0",
-  RGB_WHITE: "#FFF",
+  RGB_MAGENTA: "#F0F",
+  RGB_CYAN: "#0FF",
 }
 
 export const CONTROLS = {

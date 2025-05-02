@@ -1,3 +1,5 @@
+import { COLORS } from "../constants.js"
+
 /**
  * Classe base para representar um retângulo na tela.
  *
@@ -30,7 +32,7 @@ export class Rectangle {
    * @param {string} color
    * @returns {Rectangle}
    */
-  constructor(x, y, width, height = null, color = "#f0f") {
+  constructor(x, y, width, height = null, color = COLORS.RGB_MAGENTA) {
     this.x = x
     this.y = y
     this.width = width

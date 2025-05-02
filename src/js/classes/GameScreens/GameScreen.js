@@ -1,10 +1,13 @@
-import { Screen } from "./Screen.js"
 import { Wave } from "../GameEnemies/Wave.js"
+import { Button } from "./Button.js"
+import { Screen } from "./Screen.js"
 import { Painel } from "../GamePainel/Painel.js"
+import { Rectangle } from "../Rectangle.js"
 import { SunManager } from "../GameSun/SunManager.js"
-import { PlantManager } from "../GamePlants/PlantManager.js"
 import { createLawn } from "../../functions.js"
-import { COLORS, FONT } from "../../constants.js"
+import { PlantManager } from "../GamePlants/PlantManager.js"
+import { PauseOverlay } from "./modals/PauseOverlay.js"
+import { COLORS, CONTROLS, FONT } from "../../constants.js"
 
 export class GameScreen extends Screen {
   mouseStates = {
@@ -18,21 +21,23 @@ export class GameScreen extends Screen {
   }
   currentGameState = this.gameStates.PLAYING
   currentMouseState = this.mouseStates.FREE
-  mousePos = [0, 0]
   painel = null
   lawn = null
   wave = null
-  currentPlant = {}
   plantManager = null
+  pauseOverlay = null
   sunManager = new SunManager()
+  currentPlant = {}
   mySuns = 1_000 // para desenvolvimento
 
+  /**
+   * Construtor do GameScreen.
+   *
+   * @param {string} name - identificação nominal para a tela
+   * @param {Game} game - referência do game
+   */
   constructor(name, game) {
     super(name, game)
-  }
-
-  onEnter() {
-    this.init()
   }
 
   /**
@@ -49,6 +54,10 @@ export class GameScreen extends Screen {
 
     this.sunManager.draw(ctx)
 
+    super.drawButtons(ctx)
+
+    this.pauseOverlay.draw(ctx)
+
     this.drawMouseInfo(ctx, this.game.mousePos)
   }
 
@@ -59,6 +68,8 @@ export class GameScreen extends Screen {
    *    fornecido pelo `requestAnimationFrame`, usado para sincronização de animações.
    */
   update = (timestamp) => {
+    if (this.pauseOverlay.isActive) return
+
     this.sunManager.update(timestamp)
     this.plantManager.update(timestamp, this.wave)
 
@@ -72,13 +83,73 @@ export class GameScreen extends Screen {
   }
 
   /**
+   * Inicializa os elementos do GameScreen ao entrar na tela.
+   */
+  onEnter() {
+    super.onEnter()
+
+    this.init()
+  }
+
+  handleClick(mousePos) {
+    super.handleClick(mousePos)
+    this.pauseOverlay.handleClick(mousePos)
+
+    // Seleciona um item do painel
+    this.painel.items.forEach((item) => {
+      if (
+        mousePos[0] > item.x &&
+        mousePos[0] < item.x + item.width &&
+        mousePos[1] > item.y &&
+        mousePos[1] < item.y + item.height &&
+        this.currentMouseState == this.mouseStates.FREE &&
+        this.mySuns >= item.cust
+      ) {
+        this.currentMouseState = this.mouseStates.PLANT
+        this.currentPlant = item
+      }
+    })
+
+    // Planta/Remove uma planta no grid
+    this.lawn.grid.forEach((line, i) => {
+      line.forEach((field, j) => {
+        if (
+          mousePos[0] > field.x &&
+          mousePos[0] < field.x + field.width &&
+          mousePos[1] > field.y &&
+          mousePos[1] < field.y + field.height
+        ) {
+          if (this.currentMouseState === this.mouseStates.REMOVE) {
+            this.removePlant([i, j])
+          } else {
+            this.plant([field.x, field.y], [i, j])
+          }
+        }
+      })
+    })
+  }
+
+  handleKeyUp(eventKey) {
+    if (eventKey.toLowerCase() === CONTROLS.R) {
+      this.currentMouseState =
+        this.currentMouseState === this.mouseStates.REMOVE
+          ? this.mouseStates.FREE
+          : this.mouseStates.REMOVE
+    }
+
+    if (eventKey.toLowerCase() === CONTROLS.ESC) {
+      this.pauseOverlay.toggle()
+    }
+  }
+
+  /**
    * Informa ao jogador qual estado se encontra o mouse:
    *
-   * - Livre;
+   * - Livre: `0`;
    *
-   * - Com planta na mão;
+   * - Com planta na mão: `1`;
    *
-   * - Para remover planta;
+   * - Para remover planta: `2`;
    */
   drawMouseInfo = (ctx, mousePos) => {
     ctx.fillStyle = COLORS.RGB_GREEN
@@ -165,11 +236,31 @@ export class GameScreen extends Screen {
       COLORS.GREEN_YELLOW,
       items
     )
-
     this.lawn = createLawn(this.painel, this.game.cnv, [5, 13])
     this.plantManager = new PlantManager(this.lawn, this)
     this.wave = new Wave(
       this.lawn.grid.map((_, index) => this.lawn.grid[index][0].y)
     )
+    const rect = new Rectangle(
+      this.game.cnv.width / 2 - 150,
+      this.game.cnv.height / 2 - 250,
+      300,
+      500,
+      COLORS.RGB_BLUE
+    )
+    this.pauseOverlay = new PauseOverlay(rect, this)
+    this.buttons = [
+      new Button(
+        this.painel.width - 100,
+        0,
+        100,
+        50,
+        COLORS.RGB_BLUE,
+        "Pausar",
+        () => {
+          this.pauseOverlay.toggle()
+        }
+      ),
+    ]
   }
 }

@@ -1,9 +1,9 @@
-import { COLORS, CONTROLS } from "../constants.js"
 import { GameScreen } from "./GameScreens/GameScreen.js"
 import { HomeScreen } from "./GameScreens/HomeScreen.js"
 import { LevelsScreen } from "./GameScreens/LevelsScreen.js"
 import { SettingsScreen } from "./GameScreens/SettingsScreen.js"
 import { CreditsScreen } from "./GameScreens/CreditsScreen.js"
+import { COLORS, CONTROLS } from "../constants.js"
 
 export class Game {
   gameScreens = {
@@ -13,7 +13,6 @@ export class Game {
     SETTINGS: new SettingsScreen("SETTINGS", this),
     CREDITS: new CreditsScreen("CREDITS", this),
     GAME: new GameScreen("GAME", this),
-    PAUSE: 6, // não sei se pode estar aqui
   }
   currentGameScreen = this.gameScreens.HOME
   mousePos = [0, 0]
@@ -51,11 +50,17 @@ export class Game {
     this.currentGameScreen.update(timestamp)
   }
 
+  /**
+   * Limpa a tela do canvas.
+   */
   clearCanvas = () => {
     this.ctx.fillStyle = COLORS.RGB_WHITE
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height)
   }
 
+  /**
+   * Troca a tela atual do game por uma nova.
+   */
   setScreen(screenName) {
     if (this.gameScreens[screenName]) {
       this.currentGameScreen.onExit() // Notifica a tela atual que está saindo
@@ -68,67 +73,16 @@ export class Game {
    * Adiciona os eventos ao documento.
    */
   addEvents = () => {
-    document.addEventListener("click", (event) => {
-      const mousePos = [event.clientX, event.clientY]
-
-      this.currentGameScreen.handleClick(mousePos)
-
-      if (this.currentGameScreen.name == "GAME") {
-        const screen = this.currentGameScreen
-        // Seleciona um item do painel
-        screen.painel.items.forEach((item) => {
-          if (
-            this.mousePos[0] > item.x &&
-            this.mousePos[0] < item.x + item.width &&
-            this.mousePos[1] > item.y &&
-            this.mousePos[1] < item.y + item.height &&
-            screen.currentMouseState == screen.mouseStates.FREE &&
-            screen.mySuns >= item.cust
-          ) {
-            screen.currentMouseState = screen.mouseStates.PLANT
-            screen.currentPlant = item
-          }
-        })
-
-        // Planta/Remove uma planta no grid
-        screen.lawn.grid.forEach((line, i) => {
-          line.forEach((field, j) => {
-            if (
-              this.mousePos[0] > field.x &&
-              this.mousePos[0] < field.x + field.width &&
-              this.mousePos[1] > field.y &&
-              this.mousePos[1] < field.y + field.height
-            ) {
-              if (screen.currentMouseState === screen.mouseStates.REMOVE) {
-                screen.removePlant([i, j])
-              } else {
-                screen.plant([field.x, field.y], [i, j])
-              }
-            }
-          })
-        })
-      }
+    document.addEventListener("click", () => {
+      this.currentGameScreen.handleClick(this.mousePos)
     })
 
     document.addEventListener("keyup", (event) => {
-      if (this.currentGameScreen.name == "GAME") {
-        const screen = this.currentGameScreen
-        if (event.key.toLowerCase() === CONTROLS.R) {
-          screen.currentMouseState =
-            screen.currentMouseState === screen.mouseStates.REMOVE
-              ? screen.mouseStates.FREE
-              : screen.mouseStates.REMOVE
-        }
-      }
-
-      if (event.key.toLowerCase() === CONTROLS.ESC) {
-        console.log("Pause Game")
-      }
+      this.currentGameScreen.handleKeyUp(event.key)
     })
 
     document.addEventListener("mousemove", (event) => {
-      this.mousePos[0] = event.clientX
-      this.mousePos[1] = event.clientY
+      this.mousePos = [event.clientX, event.clientY]
     })
   }
 
