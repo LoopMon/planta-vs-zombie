@@ -14,7 +14,7 @@ function main() {
   }
 
   /** @type {Game} */
-  const game = new Game(cnv, ctx)
+  const game = new Game(ctx)
 
   game.init()
 }

@@ -1,50 +1,30 @@
-import { Painel } from "./GamePainel/Painel.js"
-import { Wave } from "./GameEnemies/Wave.js"
-import { SunManager } from "./GameSun/SunManager.js"
-import { PlantManager } from "./GamePlants/PlantManager.js"
-import { createLawn } from "../functions.js"
-import { COLORS, CONTROLS, FONT } from "../constants.js"
+import { GameScreen } from "./GameScreens/GameScreen.js"
+import { HomeScreen } from "./GameScreens/HomeScreen.js"
+import { LevelsScreen } from "./GameScreens/LevelsScreen.js"
+import { SettingsScreen } from "./GameScreens/SettingsScreen.js"
+import { CreditsScreen } from "./GameScreens/CreditsScreen.js"
+import { COLORS } from "../constants.js"
 
 export class Game {
-  mouseStates = {
-    FREE: 0,
-    PLANT: 1,
-    REMOVE: 2,
-  }
-  gameStates = {
-    PLAYING: 0,
-    PAUSED: 1,
-  }
   gameScreens = {
     START_SCREEN: 0, // pode ser uma tela de loading, pensando ainda
-    HOME: 1,
-    LEVELS: 2,
-    SETTINGS: 3,
-    EXTRAS: 4,
-    GAME: 5,
-    PAUSE: 6, // não sei se pode estar aqui
+    HOME: new HomeScreen("HOME", this),
+    LEVELS: new LevelsScreen("LEVELS", this),
+    SETTINGS: new SettingsScreen("SETTINGS", this),
+    CREDITS: new CreditsScreen("CREDITS", this),
+    GAME: new GameScreen("GAME", this),
   }
-  currentGameState = this.gameStates.PLAYING
-  currentMouseState = this.mouseStates.FREE
-  currentGameScreen = this.gameScreens.GAME
+  currentGameScreen = this.gameScreens.HOME
   mousePos = [0, 0]
-  painel = null
-  lawn = null
-  wave = null
-  currentPlant = {}
-  plantManager = null
-  sunManager = new SunManager()
-  mySuns = 1_000 // para desenvolvimento
 
   /**
    * Cria o jogo com todos os elementos necessários.
    *
-   * @param {HTMLCanvasElement} cnv - Elemento canvas HTML
    * @param {CanvasRenderingContext2D} ctx - Contexto de renderização do canvas
    * @returns {Game}
    */
-  constructor(cnv, ctx) {
-    this.cnv = cnv
+  constructor(ctx) {
+    this.cnv = ctx.canvas
     this.ctx = ctx
     // Definindo largura e altura do canvas para dimensões da tela
     this.cnv.width = window.innerWidth
@@ -55,17 +35,8 @@ export class Game {
    * Responsável por desenhar os elementos do jogo.
    */
   draw = () => {
-    this.lawn.drawRect(this.ctx)
-
-    this.painel.drawRect(this.ctx, this.mySuns)
-
-    this.plantManager.draw(this.ctx)
-
-    this.wave.drawZombies(this.ctx)
-
-    this.sunManager.draw(this.ctx)
-
-    this.drawMouseInfo()
+    this.clearCanvas()
+    this.currentGameScreen.draw(this.ctx)
   }
 
   /**
@@ -75,148 +46,42 @@ export class Game {
    *    fornecido pelo `requestAnimationFrame`, usado para sincronização de animações.
    */
   update = (timestamp) => {
-    this.sunManager.update(timestamp)
-    this.plantManager.update(timestamp, this.wave)
-
-    this.wave.update(timestamp)
-    this.wave.attackPlants(this.plantManager.plants)
-    this.wave.moveZombies()
-    this.wave.checkZombiesLife()
-    this.sunManager.fallSuns(this)
-    this.sunManager.collectSun(this)
-    this.spawns()
-  }
-
-  /**
-   * Informa ao jogador qual estado se encontra o mouse:
-   *
-   * - Livre;
-   *
-   * - Com planta na mão;
-   *
-   * - Para remover planta;
-   */
-  drawMouseInfo = () => {
-    this.ctx.fillStyle = COLORS.RGB_GREEN
-    let fontConfig = `${FONT.MEDIUM}px ${FONT.FAMILY}`
-    this.ctx.font = fontConfig
-    this.ctx.fillText(
-      this.currentMouseState,
-      this.mousePos[0],
-      this.mousePos[1]
-    )
-  }
-
-  /**
-   * Chama os métodos para criar os objetos
-   * que nascem por tempo.
-   */
-  spawns = () => {
-    this.sunManager.spawnSun(this)
-    this.plantManager.spawns(this.sunManager)
-    this.wave.spawnZombie()
-  }
-
-  /**
-   * Posiciona a planta em uma posição informada, se
-   * ja estiver ocupado não planta.
-   *
-   * @param {number[2]} plantPos - posição da nova planta
-   * @param {number[2]} gridPos - grid onde vai ser colocada a planta
-   */
-  plant = (plantPos, gridPos) => {
-    if (!this.hasResourcesForPlant()) return
-
-    this.plantManager.addPlant(this.currentPlant.name, plantPos, gridPos)
-    this.mySuns -= this.currentPlant.cust
-    this.currentPlant = {}
-    this.currentMouseState = this.mouseStates.FREE
-  }
-
-  /**
-   * Remove a planta do gramado quando o
-   * mouse se encontra no estado de REMOVE.
-   */
-  removePlant = (gridPos) => {
-    if (this.currentMouseState === this.mouseStates.REMOVE) {
-      this.plantManager.removePlant(gridPos)
-      this.currentMouseState = this.mouseStates.FREE
-    }
-  }
-
-  /**
-   * Verifica se possui planta na mão e
-   * se possui sois suficientes.
-   *
-   * @returns {boolean}
-   */
-  hasResourcesForPlant = () => {
-    return this.currentPlant && this.mySuns >= this.currentPlant.cust
+    this.currentGameScreen.update(timestamp)
   }
 
   /**
    * Limpa a tela do canvas.
    */
   clearCanvas = () => {
-    this.ctx.fillStyle = "#964b00"
+    this.ctx.fillStyle = COLORS.RGB_WHITE
     this.ctx.fillRect(0, 0, this.cnv.width, this.cnv.height)
+  }
+
+  /**
+   * Troca a tela atual do game por uma nova.
+   */
+  setScreen(screenName) {
+    if (this.gameScreens[screenName]) {
+      this.currentGameScreen.onExit() // Notifica a tela atual que está saindo
+      this.currentGameScreen = this.gameScreens[screenName]
+      this.currentGameScreen.onEnter() // Prepara a nova tela
+    }
   }
 
   /**
    * Adiciona os eventos ao documento.
    */
   addEvents = () => {
-    document.addEventListener("click", (event) => {
-      const mousePos = [event.clientX, event.clientY]
-      // Seleciona um item do painel
-      this.painel.items.forEach((item) => {
-        if (
-          mousePos[0] > item.x &&
-          mousePos[0] < item.x + item.width &&
-          mousePos[1] > item.y &&
-          mousePos[1] < item.y + item.height &&
-          this.currentMouseState == this.mouseStates.FREE &&
-          this.mySuns >= item.cust
-        ) {
-          this.currentMouseState = this.mouseStates.PLANT
-          this.currentPlant = item
-        }
-      })
-
-      // Planta/Remove uma planta no grid
-      this.lawn.grid.forEach((line, i) => {
-        line.forEach((field, j) => {
-          if (
-            mousePos[0] > field.x &&
-            mousePos[0] < field.x + field.width &&
-            mousePos[1] > field.y &&
-            mousePos[1] < field.y + field.height
-          ) {
-            if (this.currentMouseState === this.mouseStates.REMOVE) {
-              this.removePlant([i, j])
-            } else {
-              this.plant([field.x, field.y], [i, j])
-            }
-          }
-        })
-      })
+    document.addEventListener("click", () => {
+      this.currentGameScreen.handleClick(this.mousePos)
     })
 
     document.addEventListener("keyup", (event) => {
-      if (event.key.toLowerCase() === CONTROLS.R) {
-        this.currentMouseState =
-          this.currentMouseState === this.mouseStates.REMOVE
-            ? this.mouseStates.FREE
-            : this.mouseStates.REMOVE
-      }
-      if (event.key.toLowerCase() === CONTROLS.ESC) {
-        console.log("Pause Game")
-      }
+      this.currentGameScreen.handleKeyUp(event.key)
     })
 
     document.addEventListener("mousemove", (event) => {
-      this.mousePos[0] = event.clientX
-      this.mousePos[1] = event.clientY
+      this.mousePos = [event.clientX, event.clientY]
     })
   }
 
@@ -227,7 +92,6 @@ export class Game {
    * fornecido pelo `requestAnimationFrame`.
    */
   run = (timestamp) => {
-    this.clearCanvas(this.ctx)
     this.draw()
     this.update(timestamp)
     window.requestAnimationFrame(this.run)
@@ -238,40 +102,10 @@ export class Game {
    * itens principais para jogar.
    */
   init = () => {
-    const items = [
-      {
-        name: "Sol",
-        cust: 50,
-      },
-      {
-        name: "Simples",
-        cust: 100,
-      },
-      {
-        name: "Duplo",
-        cust: 200,
-      },
-      {
-        name: "Noz",
-        cust: 50,
-      },
-    ]
-    this.painel = new Painel(
-      0,
-      0,
-      this.cnv.width,
-      Math.floor(this.cnv.height / 5),
-      COLORS.GREEN_YELLOW,
-      items
-    )
-    this.lawn = createLawn(this.painel, this.cnv, [5, 13])
-    this.plantManager = new PlantManager(this.lawn, this)
-    this.wave = new Wave(
-      this.lawn.grid.map((_, index) => this.lawn.grid[index][0].y)
-    )
     this.addEvents()
-
     console.log("Starting Game!!!")
+    this.currentGameScreen.init()
+
     this.run()
   }
 }

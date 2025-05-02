@@ -60,7 +60,7 @@ export function createLawn(painel, cnv, dim = [5, 10]) {
  *
  * @param {Painel} painel - Painel do jogo
  * @param {Object[]} items - Elementos para o painel
- * @returns {Item[]} retorna uma coleção de itens
+ * @returns {MenuItem[]} retorna uma coleção de itens
  */
 export function createPainelItems(painel, items) {
   const menuItems = []

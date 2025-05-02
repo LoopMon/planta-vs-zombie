@@ -1,4 +1,4 @@
-# Planta vs Zombie
+# Plants vs Zombie (JavaScript)
 
 Este é um projeto inspirado no clássico jogo "Plants vs. Zombies". O objetivo é criar uma versão personalizada utilizando JavaScript para fins de aprendizado e diversão.
 
@@ -6,48 +6,52 @@ Este é um projeto inspirado no clássico jogo "Plants vs. Zombies". O objetivo 
 <img width="455" height="203" src="./docs/img/planta-vs-zombie-loadscreen.webp">
 </div>
 
-## Funcionalidades
+## 🌟 Funcionalidades
 
-- **Defesa estratégica**: Posicione plantas para defender sua base contra os zumbis.
-- **Diferentes tipos de plantas e zumbis**: Cada um com habilidades únicas.
-- **Progressão de níveis**: Aumente a dificuldade conforme avança no jogo.
+### 🎮 Mecânicas de Jogo
 
-## Tecnologias Utilizadas
+- **Defesa estratégica**: Posicione plantas para defender sua base contra os zumbis
+- **Sistema de telas**: Navegação entre diferentes telas do jogo:
+  - Tela inicial (Home)
+  - Seleção de níveis
+  - Configurações (áudio, resolução)
+  - Créditos
+- **Progressão de níveis**: Dificuldade crescente com novos tipos de inimigos
 
-- **HTML5**: Canvas.
-- **JavaScript**: Lógica e interatividade.
+### 🌿 Plantas e Zumbis
 
-## Diagrama de Classe
+- Múltiplos tipos com habilidades únicas
+- Sistema de custo de recursos (sol) para plantar
 
-<div align="center">
-<img src="./docs/img/Planta vs Zombie - Diagrama.png">
-</div>
+## 💻 Tecnologias Utilizadas
 
-## Como Executar
+- **HTML5 Canvas** para renderização
+- **JavaScript ES6+** com módulos e controle do canvas
 
-1. Clone o repositório:
+## 🗺️ Diagrama de Classes
+
+O diagrama de classes está disponível em:  
+[diagrama-classes.svg](./docs/img/Planta%20vs%20Zombie%20-%20Diagrama.svg)
+
+## 🚀 Como Executar
+
+### Opção 1: Usando Live Server (Recomendado)
+
+1. Instale a extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) no VSCode
+2. Clique com o botão direito em `index.html` e selecione "Open with Live Server"
+
+### Opção 2: Servidor Local
 
 ```bash
-git clone https://github.com/seu-usuario/planta-vs-zombie.git
+# Python 3.x
+python3 -m http.server 8000
 ```
 
-2. Navegue até o diretório do projeto:
+Acesse: http://localhost:8000
 
-```bash
-cd planta-vs-zombie
-```
+## 🎮 Amostra do Jogo
 
-3. Abra o arquivo `src/index.html` no navegador.
-
-## Amostra do jogo (por enquanto)
-
-### Grid e painel com os itens (plantas) para usar.
-
-<div align="center">
-<img width="455" height="203" src="./docs/img/layout-new.png">
-</div>
-
-### Jogo com os elementos agindo.
+### Gameplay em Ação
 
 <div align="center">
 <img width="455" height="203" src="./docs/img/layout-with-elements-new.png">
@@ -55,4 +59,4 @@ cd planta-vs-zombie
 
 ---
 
-Divirta-se jogando e aprendendo!
+Divirta-se jogando e contribuindo! 🌱🧟
