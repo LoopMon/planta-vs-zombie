@@ -9,15 +9,18 @@ export class Button extends Rectangle {
     this.action = action
     this.textColor = options.color || COLORS.RGB_YELLOW
     this.fontSize = options.fontSize || FONT.BIG
+    this.canDrawBG = options.canDrawBG ?? true
   }
 
   draw(ctx) {
-    super.drawRect(ctx)
+    if (this.canDrawBG) super.drawRect(ctx)
+
     ctx.fillStyle = this.textColor
     ctx.font = `${this.fontSize}px Arial`
+    ctx.textAlign = "center"
     ctx.fillText(
       this.label,
-      this.x + GAME.GAP,
+      this.getRight() / 2 + this.fontSize,
       this.getBottom() - this.fontSize
     )
   }
